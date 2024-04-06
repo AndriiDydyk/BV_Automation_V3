@@ -4,7 +4,7 @@ const Worker = require('../helper/worker')
 const Ajv = require('ajv')
 const { expect } = require('chai')
 
-const baseUrl = 'https://bv.api.vostok.bank'
+const baseUrl = 'https://bv.test.api.vostok.bank'
 const password = 'Qwerty12345'
 const phoneNumber = '380660007201'
 
@@ -301,7 +301,7 @@ describe('Переказ з картки на картку', function () {
   const worker = new Worker()
 
   const payerCardName = 'Додаткова UAH'
-  const recipientCardNumber = '5168130700992300'
+  const recipientCardNumber = '5235020700462264'
 
   let token
   let clientPrivateKey
