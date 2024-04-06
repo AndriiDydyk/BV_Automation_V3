@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "transferType": { "type": "string", "enum": ["ordinary"] },
+    "recipientName": { "type": "string" },
+    "sign": { "type": "string" },
+    "cryptogram": { "type": "string" }
+  },
+  "required": ["transferType", "sign", "cryptogram"]
+}

@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "properties": {
+    "hasCardToSave": { "type": "boolean" },
+    "cardToSave": {
+      "type": "object",
+      "properties": {
+        "cardMask": { "type": "string" },
+        "bank": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "logo": {
+              "type": "object",
+              "properties": {
+                "darkLogoUrl": { "type": "string" },
+                "lightLogoUrl": { "type": "string" }
+              },
+              "required": ["darkLogoUrl", "lightLogoUrl"]
+            },
+            "logoTransparent": {
+              "type": "object",
+              "properties": {
+                "darkLogoUrl": { "type": "string" },
+                "lightLogoUrl": { "type": "string" }
+              },
+              "required": ["darkLogoUrl", "lightLogoUrl"]
+            }
+          },
+          "required": ["name", "logo", "logoTransparent"]
+        }
+      },
+      "required": ["cardMask", "bank"]
+    },
+    "canBeSavedAsTemplate": { "type": "boolean" },
+    "payerContractId": { "type": "integer" },
+    "operation": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "status": { "type": "string" },
+        "amountCents": { "type": "integer" },
+        "darkIcon": { "type": "string" },
+        "lightIcon": { "type": "string" },
+        "dateTime": { "type": "integer" }
+      },
+      "required": [
+        "id",
+        "title",
+        "subtitle",
+        "status",
+        "amountCents",
+        "darkIcon",
+        "lightIcon",
+        "dateTime"
+      ]
+    },
+    "sign": { "type": "string" },
+    "cryptogram": { "type": "string" }
+  },
+  "required": [
+    "hasCardToSave",
+    "cardToSave",
+    "canBeSavedAsTemplate",
+    "payerContractId",
+    "operation",
+    "sign",
+    "cryptogram"
+  ]
+}

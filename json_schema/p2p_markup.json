@@ -1,0 +1,228 @@
+{
+  "type": "object",
+  "properties": {
+    "externalCardTransfers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "value": { "type": "string" },
+          "sortIndex": { "type": "integer" },
+          "isRequired": { "type": "boolean" },
+          "isEditable": { "type": "boolean" },
+          "localization": { "type": "string" },
+          "validators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string" },
+                "value": { "type": "string" },
+                "exception": {
+                  "type": "object",
+                  "properties": {
+                    "errorCode": { "type": "integer" },
+                    "errorMessage": { "type": "string" }
+                  },
+                  "required": ["errorCode", "errorMessage"]
+                }
+              },
+              "required": ["type", "value", "exception"]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "value",
+          "sortIndex",
+          "isRequired",
+          "isEditable",
+          "localization",
+          "validators"
+        ]
+      }
+    },
+    "transferByPhoneNumber": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "value": { "type": "string" },
+          "sortIndex": { "type": "integer" },
+          "isRequired": { "type": "boolean" },
+          "isEditable": { "type": "boolean" },
+          "localization": { "type": "string" },
+          "validators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string" },
+                "value": { "type": "string" },
+                "exception": {
+                  "type": "object",
+                  "properties": {
+                    "errorCode": { "type": "integer" },
+                    "errorMessage": { "type": "string" }
+                  },
+                  "required": ["errorCode", "errorMessage"]
+                }
+              },
+              "required": ["type", "value", "exception"]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "value",
+          "sortIndex",
+          "isRequired",
+          "isEditable",
+          "localization",
+          "validators"
+        ]
+      }
+    },
+    "ourCardTransfers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "value": { "type": "string" },
+          "sortIndex": { "type": "integer" },
+          "isRequired": { "type": "boolean" },
+          "isEditable": { "type": "boolean" },
+          "localization": { "type": "string" },
+          "validators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string" },
+                "value": { "type": "string" },
+                "exception": {
+                  "type": "object",
+                  "properties": {
+                    "errorCode": { "type": "integer" },
+                    "errorMessage": { "type": "string" }
+                  },
+                  "required": ["errorCode", "errorMessage"]
+                }
+              },
+              "required": ["type", "value", "exception"]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "value",
+          "sortIndex",
+          "isRequired",
+          "isEditable",
+          "localization",
+          "validators"
+        ]
+      }
+    },
+    "transferBetweenAccounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "value": { "type": "string" },
+          "sortIndex": { "type": "integer" },
+          "isRequired": { "type": "boolean" },
+          "isEditable": { "type": "boolean" },
+          "localization": { "type": "string" },
+          "validators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string" },
+                "value": { "type": "string" },
+                "exception": {
+                  "type": "object",
+                  "properties": {
+                    "errorCode": { "type": "integer" },
+                    "errorMessage": { "type": "string" }
+                  },
+                  "required": ["errorCode", "errorMessage"]
+                }
+              },
+              "required": ["type", "value", "exception"]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "value",
+          "sortIndex",
+          "isRequired",
+          "isEditable",
+          "localization",
+          "validators"
+        ]
+      }
+    },
+    "foreignExchange": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "value": { "type": "string" },
+          "sortIndex": { "type": "integer" },
+          "isRequired": { "type": "boolean" },
+          "isEditable": { "type": "boolean" },
+          "localization": { "type": "string" },
+          "validators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string" },
+                "value": { "type": "string" },
+                "exception": {
+                  "type": "object",
+                  "properties": {
+                    "errorCode": { "type": "integer" },
+                    "errorMessage": { "type": "string" }
+                  },
+                  "required": ["errorCode", "errorMessage"]
+                }
+              },
+              "required": ["type", "value", "exception"]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "value",
+          "sortIndex",
+          "isRequired",
+          "isEditable",
+          "localization",
+          "validators"
+        ]
+      }
+    },
+    "sessionGuid": { "type": "string" },
+    "sign": { "type": "string" },
+    "cryptogram": { "type": "string" }
+  },
+  "required": [
+    "externalCardTransfers",
+    "transferByPhoneNumber",
+    "ourCardTransfers",
+    "transferBetweenAccounts",
+    "foreignExchange",
+    "sessionGuid",
+    "sign",
+    "cryptogram"
+  ]
+}

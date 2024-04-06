@@ -1,0 +1,152 @@
+{
+  "type": "object",
+  "properties": {
+    "cardAccounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "contractId": { "type": "integer" },
+          "balance": {
+            "type": "object",
+            "properties": {
+              "totalAmount": { "type": "integer" },
+              "currency": { "type": "string", "enum": ["₴", "$", "€"] },
+              "currencyCode": {
+                "type": "string",
+                "enum": ["UAH", "USD", "EUR"]
+              },
+              "credit": {
+                "type": "object",
+                "properties": {
+                  "max": { "type": "integer" },
+                  "used": { "type": "integer" },
+                  "type": {
+                    "type": "string",
+                    "enum": ["creditLimit", "overdraft"]
+                  },
+                  "minPaymentStatus": {
+                    "type": "string",
+                    "enum": ["none", "defined", "paid", "overdue"]
+                  },
+                  "minPaymentAmount": { "type": "integer" }
+                },
+                "required": [
+                  "max",
+                  "used",
+                  "type",
+                  "minPaymentStatus",
+                  "minPaymentAmount"
+                ]
+              },
+              "personalAmount": { "type": "integer" }
+            },
+            "required": [
+              "totalAmount",
+              "currency",
+              "currencyCode",
+              "personalAmount"
+            ]
+          },
+          "iban": { "type": "string" },
+          "isMultiCurrency": { "type": "boolean" },
+          "number": { "type": "string" },
+          "requisites": {
+            "type": "object",
+            "properties": {
+              "fullName": { "type": "string" },
+              "ipn": { "type": "string" }
+            },
+            "required": ["fullName", "ipn"]
+          },
+          "openDate": { "type": "integer" },
+          "cards": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "vrAccountNumber": { "type": "string" },
+                "imageUrl": { "type": "string" },
+                "status": { "type": "string" },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "onlineBanking": { "type": "integer" },
+                    "cashWithdraw": { "type": "integer" }
+                  },
+                  "required": ["onlineBanking", "cashWithdraw"]
+                },
+                "cardNumber": { "type": "string" },
+                "cardName": { "type": "string" },
+                "expireDate": { "type": "string" },
+                "cardholder": { "type": "string" },
+                "allowedDigitization": { "type": "boolean" },
+                "id": { "type": "integer" },
+                "tokenUniqueReference": { "type": "array" },
+                "availableServices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string" },
+                      "state": { "type": "string" }
+                    },
+                    "required": ["name", "state"]
+                  }
+                },
+                "allowInPayment": { "type": "boolean" }
+              },
+              "required": [
+                "imageUrl",
+                "status",
+                "limits",
+                "cardNumber",
+                "expireDate",
+                "cardholder",
+                "allowedDigitization",
+                "id",
+                "tokenUniqueReference",
+                "availableServices",
+                "allowInPayment"
+              ]
+            }
+          },
+          "agreementType": { "type": "string" },
+          "allowOpenMoneyBox": { "type": "boolean" }
+        },
+        "required": [
+          "id",
+          "contractId",
+          "balance",
+          "iban",
+          "isMultiCurrency",
+          "number",
+          "requisites",
+          "openDate",
+          "cards",
+          "agreementType",
+          "allowOpenMoneyBox"
+        ]
+      }
+    },
+    "cashback": {
+      "type": "object",
+      "properties": {
+        "total": { "type": "integer" },
+        "info": {
+          "type": "object",
+          "properties": {
+            "minimum": { "type": "integer" },
+            "maximum": { "type": "integer" },
+            "percent": { "type": "number" },
+            "referralPayoff": { "type": "integer" }
+          },
+          "required": ["minimum", "maximum", "percent", "referralPayoff"]
+        }
+      },
+      "required": ["total", "info"]
+    }
+  },
+  "required": ["cardAccounts", "cashback"]
+}

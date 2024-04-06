@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "properties": {
+    "commission": {
+      "type": "object",
+      "properties": {
+        "debitAmount": { "type": "number" },
+        "debitCurrency": { "type": "string" },
+        "creditAmount": { "type": "number" },
+        "creditCurrency": { "type": "string" },
+        "exchangeRate": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "totalCurrency": { "type": "string" },
+        "clientCommissionAmount": { "type": "number" },
+        "clientCommissionCurrency": { "type": "string" }
+      },
+      "required": [
+        "debitAmount",
+        "debitCurrency",
+        "creditAmount",
+        "creditCurrency",
+        "exchangeRate",
+        "totalAmount",
+        "totalCurrency",
+        "clientCommissionAmount",
+        "clientCommissionCurrency"
+      ]
+    },
+    "creditWarningMessage": { "type": "string" }
+  },
+  "required": ["commission"]
+}
