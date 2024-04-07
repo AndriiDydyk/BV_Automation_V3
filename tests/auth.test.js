@@ -276,7 +276,7 @@ describe('Дашборд', function () {
   })
 })
 
-describe.only('Переказ з картки на картку', function () {
+describe('Переказ з картки на картку', function () {
   const ajv = new Ajv()
   const worker = new Worker()
 
