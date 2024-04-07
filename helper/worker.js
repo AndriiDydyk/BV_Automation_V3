@@ -179,6 +179,10 @@ class Worker {
       return null
     }
   }
+
+  async waitForTime (milliseconds) {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds))
+  }
 }
 
 module.exports = Worker

@@ -7,7 +7,7 @@ const { expect } = require('chai')
 const ajv = new Ajv()
 const worker = new Worker()
 
-const baseUrl = 'https://bv.test.api.vostok.bank'
+const baseUrl = 'https://bv.api.vostok.bank'
 const phoneNumber = '380660007201'
 const otp = '111111'
 const password = 'Qwerty12345'
@@ -384,7 +384,7 @@ describe('Дашборд', function () {
 
 describe('Переказ з картки на картку', function () {
   const payerCardName = 'Додаткова UAH'
-  const recipientCardNumber = '5235020700462264'
+  const recipientCardNumber = '5168130700992300'
 
   let token
   let payerCard
@@ -487,6 +487,11 @@ describe('Переказ з картки на картку', function () {
         .get('/payments/p2p/commission')
         .set('Authorization', `Bearer ${token}`)
         .send()
+
+      await worker.setSessionValue(
+        'totalAmount',
+        response.body.commission.totalAmount
+      )
     })
 
     it('should return 200 OK status code', function () {
@@ -529,7 +534,11 @@ describe('Переказ з картки на картку', function () {
           sessionGuid
         })
 
-      await worker.setSessionValue('confirmResponse', response.body)
+      await worker.setSessionValue(
+        'payerContractId',
+        response.body.payerContractId
+      )
+      await worker.setSessionValue('operation', response.body.operation)
     })
 
     it('should return 200 OK status code', function () {
@@ -546,6 +555,10 @@ describe('Переказ з картки на картку', function () {
       }
 
       expect(valid).to.be.true
+    })
+
+    it('should have correct payerContractId', () => {
+      expect(response.body.payerContractId).to.equal(payerCard.contractId)
     })
 
     it('should have correct title (Переказ з картки на картку)', () => {
@@ -579,10 +592,12 @@ describe('Переказ з картки на картку', function () {
 
   describe('GET /history/operation', function () {
     let response
+    let currentOperation
 
     before(async function () {
       this.timeout(20000)
 
+      await worker.waitForTime(5000)
       const contractId = payerCard.contractId
 
       response = await request(baseUrl)
@@ -590,7 +605,12 @@ describe('Переказ з картки на картку', function () {
         .set('Authorization', `Bearer ${token}`)
         .send()
 
-      await worker.setSessionValue('historyOperation', response.body)
+      const operation = await worker.getSessionValue('operation')
+      currentOperation = response.body.find((item) => item.id === operation.id)
+
+      if (!currentOperation) {
+        throw new Error('Не вдалось знайти операції зі вказаним id')
+      }
     })
 
     it('should return 200 OK status code', function () {
@@ -607,6 +627,34 @@ describe('Переказ з картки на картку', function () {
       }
 
       expect(valid).to.be.true
+    })
+
+    it('should return current operation', function () {
+      expect(currentOperation).to.be.exist
+    })
+
+    it('should have correct subtitle (Переказ з картки на картку)', () => {
+      expect(currentOperation.subtitle).to.equal('Переказ з картки на картку')
+    })
+
+    it('should have correct status', () => {
+      expect(currentOperation.status).to.be.oneOf([
+        'processing',
+        'success',
+        'fail'
+      ])
+    })
+
+    it('should have correct dark icon URL', () => {
+      expect(currentOperation.darkIcon).to.equal(
+        'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Dark.png'
+      )
+    })
+
+    it('should have correct light icon URL', () => {
+      expect(currentOperation.lightIcon).to.equal(
+        'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
+      )
     })
   })
 })
