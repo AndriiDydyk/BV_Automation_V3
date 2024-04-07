@@ -2,15 +2,15 @@
   "stats": {
     "suites": 12,
     "tests": 23,
-    "passes": 22,
-    "pending": 0,
+    "passes": 20,
+    "pending": 2,
     "failures": 1,
-    "start": "2024-04-06T19:07:56.052Z",
-    "end": "2024-04-06T19:08:08.513Z",
-    "duration": 12461,
+    "start": "2024-04-07T08:27:03.481Z",
+    "end": "2024-04-07T08:27:14.494Z",
+    "duration": 11013,
     "testsRegistered": 23,
-    "passPercent": 95.65217391304348,
-    "pendingPercent": 0,
+    "passPercent": 95.23809523809523,
+    "pendingPercent": 8.695652173913043,
     "other": 0,
     "hasOther": false,
     "skipped": 0,
@@ -18,7 +18,7 @@
   },
   "results": [
     {
-      "uuid": "58047827-cb08-4fbf-9ffb-df864d0f60b1",
+      "uuid": "0eaed593-9ad2-4bb0-b51c-b84fb08a1cc1",
       "title": "",
       "fullFile": "",
       "file": "",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "22f28a95-04d0-4110-b848-1d3af1e93a7a",
+          "uuid": "b3e29eb2-b68b-4113-9455-5189d72415f5",
           "title": "Авторизація",
           "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
           "file": "/tests/auth.test.js",
@@ -36,7 +36,7 @@
               "title": "\"before all\" hook in \"Авторизація\"",
               "fullTitle": "Авторизація \"before all\" hook in \"Авторизація\"",
               "timedOut": false,
-              "duration": 15,
+              "duration": 11,
               "state": null,
               "speed": null,
               "pass": false,
@@ -45,8 +45,8 @@
               "context": null,
               "code": "clientPrivateKey = await worker.getSessionValue('clientPrivateKey')\nclientPublicKey = await worker.getSessionValue('clientPublicKey')\ndevice = await worker.getSessionValue('iosReleaseDevice')\n// device = await worker.getSessionValue('iosDebugDevice')",
               "err": {},
-              "uuid": "28eb661e-09b8-4d10-ab9c-66bb8bee97ed",
-              "parentUUID": "22f28a95-04d0-4110-b848-1d3af1e93a7a",
+              "uuid": "3d7741ed-ec72-4293-83f9-a037fde3a393",
+              "parentUUID": "b3e29eb2-b68b-4113-9455-5189d72415f5",
               "isHook": true,
               "skipped": false
             }
@@ -55,7 +55,7 @@
           "tests": [],
           "suites": [
             {
-              "uuid": "7464a718-109c-40c8-be77-0a86bf6f94bb",
+              "uuid": "9276a72e-6617-49c8-8bd5-3a1bb31ffefe",
               "title": "POST /start",
               "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
               "file": "/tests/auth.test.js",
@@ -64,7 +64,7 @@
                   "title": "\"before all\" hook in \"POST /start\"",
                   "fullTitle": "Авторизація POST /start \"before all\" hook in \"POST /start\"",
                   "timedOut": false,
-                  "duration": 362,
+                  "duration": 331,
                   "state": null,
                   "speed": null,
                   "pass": false,
@@ -73,8 +73,8 @@
                   "context": null,
                   "code": "response = await request(baseUrl).post('/auth/v3/start').send({\n  clientPublicKey,\n  phoneNumber,\n  device\n})\nconst token = response.body.token\nconst serverPublicKey = response.body.serverPublicKey\nconst cryptogram = response.body.cryptogram\nawait worker.setSessionValue('token', token)\nawait worker.setSessionValue('serverPublicKey', serverPublicKey)\nawait worker.setSessionValue('cryptogram', cryptogram)",
                   "err": {},
-                  "uuid": "3e2e9b74-f897-461f-9368-337ec8c26124",
-                  "parentUUID": "7464a718-109c-40c8-be77-0a86bf6f94bb",
+                  "uuid": "b5b9ea5b-30af-43d9-8071-021ce63e1da5",
+                  "parentUUID": "9276a72e-6617-49c8-8bd5-3a1bb31ffefe",
                   "isHook": true,
                   "skipped": false
                 }
@@ -94,8 +94,8 @@
                   "context": null,
                   "code": "expect(response.statusCode).to.equal(200)",
                   "err": {},
-                  "uuid": "883a00d7-d127-4ec6-be51-eb2ff88b2a67",
-                  "parentUUID": "7464a718-109c-40c8-be77-0a86bf6f94bb",
+                  "uuid": "89812b69-3d0c-441e-a46d-31a5cd466a84",
+                  "parentUUID": "9276a72e-6617-49c8-8bd5-3a1bb31ffefe",
                   "isHook": false,
                   "skipped": false
                 },
@@ -103,7 +103,7 @@
                   "title": "should contain valid JSON schema",
                   "fullTitle": "Авторизація POST /start should contain valid JSON schema",
                   "timedOut": false,
-                  "duration": 17,
+                  "duration": 18,
                   "state": "passed",
                   "speed": "fast",
                   "pass": true,
@@ -112,27 +112,27 @@
                   "context": null,
                   "code": "const schema = {\n  type: 'object',\n  properties: {\n    serverPublicKey: { type: 'string' },\n    token: { type: 'string' },\n    sign: { type: 'string' },\n    cryptogram: { type: 'string' }\n  },\n  required: ['serverPublicKey', 'token', 'sign', 'cryptogram']\n}\nconst valid = ajv.validate(schema, response.body)\nif (!valid) {\n  console.error('Data does not match JSON schema:', ajv.errorsText())\n  console.error(response.body)\n}\nexpect(valid).to.be.true",
                   "err": {},
-                  "uuid": "131cf7d8-073f-4aa2-914c-769f12a1b811",
-                  "parentUUID": "7464a718-109c-40c8-be77-0a86bf6f94bb",
+                  "uuid": "1cb75ee7-7d25-45a2-a6f2-0345d885a807",
+                  "parentUUID": "9276a72e-6617-49c8-8bd5-3a1bb31ffefe",
                   "isHook": false,
                   "skipped": false
                 }
               ],
               "suites": [],
               "passes": [
-                "883a00d7-d127-4ec6-be51-eb2ff88b2a67",
-                "131cf7d8-073f-4aa2-914c-769f12a1b811"
+                "89812b69-3d0c-441e-a46d-31a5cd466a84",
+                "1cb75ee7-7d25-45a2-a6f2-0345d885a807"
               ],
               "failures": [],
               "pending": [],
               "skipped": [],
-              "duration": 17,
+              "duration": 18,
               "root": false,
               "rootEmpty": false,
               "_timeout": 2000
             },
             {
-              "uuid": "8ce27774-6e25-45a9-968f-991b58ca9bc8",
+              "uuid": "17c3ba8b-0c8f-4d2e-bf5f-f45d6c0ab8f0",
               "title": "POST /nextStep",
               "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
               "file": "/tests/auth.test.js",
@@ -141,7 +141,7 @@
                   "title": "\"before all\" hook in \"POST /nextStep\"",
                   "fullTitle": "Авторизація POST /nextStep \"before all\" hook in \"POST /nextStep\"",
                   "timedOut": false,
-                  "duration": 796,
+                  "duration": 909,
                   "state": null,
                   "speed": null,
                   "pass": false,
@@ -150,8 +150,8 @@
                   "context": null,
                   "code": "const token = await worker.getSessionValue('token')\nconst cryptogram = await worker.getSessionValue('cryptogram')\nconst serverPublicKey = await worker.getSessionValue('serverPublicKey')\nconst challange = worker.decrypt(cryptogram, clientPrivateKey)\nconst encryptData = worker.encryptAndSign(\n  {\n    challengePass: challange\n  },\n  serverPublicKey,\n  clientPrivateKey\n)\nresponse = await request(baseUrl)\n  .post('/auth/v4/nextstep')\n  .set('Authorization', `Bearer ${token}`)\n  .send({\n    sign: encryptData.sign,\n    cryptogram: encryptData.cryptogram\n  })\nawait worker.setSessionValue('cryptogram', response.body.cryptogram)\nawait worker.setSessionValue('nextStep', response.body.nextStep)",
                   "err": {},
-                  "uuid": "8eb2bdc9-fa32-4255-93e1-aec31c87dc62",
-                  "parentUUID": "8ce27774-6e25-45a9-968f-991b58ca9bc8",
+                  "uuid": "2405ba14-9ecb-4d49-ad45-66cc8d70840f",
+                  "parentUUID": "17c3ba8b-0c8f-4d2e-bf5f-f45d6c0ab8f0",
                   "isHook": true,
                   "skipped": false
                 }
@@ -171,8 +171,8 @@
                   "context": null,
                   "code": "expect(response.statusCode).to.equal(200)",
                   "err": {},
-                  "uuid": "909e895b-36ca-4128-b2c0-0c612e1c7ce0",
-                  "parentUUID": "8ce27774-6e25-45a9-968f-991b58ca9bc8",
+                  "uuid": "8613e71d-f4a6-4100-95c7-1647aff4785c",
+                  "parentUUID": "17c3ba8b-0c8f-4d2e-bf5f-f45d6c0ab8f0",
                   "isHook": false,
                   "skipped": false
                 },
@@ -180,7 +180,7 @@
                   "title": "should contain valid JSON schema",
                   "fullTitle": "Авторизація POST /nextStep should contain valid JSON schema",
                   "timedOut": false,
-                  "duration": 3,
+                  "duration": 1,
                   "state": "passed",
                   "speed": "fast",
                   "pass": true,
@@ -189,27 +189,27 @@
                   "context": null,
                   "code": "const schema = {\n  type: 'object',\n  properties: {\n    sign: { type: 'string' },\n    cryptogram: { type: 'string' }\n  },\n  required: ['sign', 'cryptogram']\n}\nconst valid = ajv.validate(schema, response.body)\nif (!valid) {\n  console.error('Data does not match JSON schema:', ajv.errorsText())\n  console.error(response.body)\n}\nexpect(valid).to.be.true",
                   "err": {},
-                  "uuid": "03594eff-8896-4742-8001-49d1f42a7617",
-                  "parentUUID": "8ce27774-6e25-45a9-968f-991b58ca9bc8",
+                  "uuid": "87382caf-b2de-47cf-ba1e-0f09bae94c7d",
+                  "parentUUID": "17c3ba8b-0c8f-4d2e-bf5f-f45d6c0ab8f0",
                   "isHook": false,
                   "skipped": false
                 }
               ],
               "suites": [],
               "passes": [
-                "909e895b-36ca-4128-b2c0-0c612e1c7ce0",
-                "03594eff-8896-4742-8001-49d1f42a7617"
+                "8613e71d-f4a6-4100-95c7-1647aff4785c",
+                "87382caf-b2de-47cf-ba1e-0f09bae94c7d"
               ],
               "failures": [],
               "pending": [],
               "skipped": [],
-              "duration": 3,
+              "duration": 1,
               "root": false,
               "rootEmpty": false,
               "_timeout": 2000
             },
             {
-              "uuid": "fd82221c-6683-4abb-9f7a-22c3f67a7592",
+              "uuid": "919997f8-fddb-426c-80d4-843cc39c3c77",
               "title": "POST /otp/confirm",
               "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
               "file": "/tests/auth.test.js",
@@ -218,7 +218,7 @@
                   "title": "\"before all\" hook in \"POST /otp/confirm\"",
                   "fullTitle": "Авторизація POST /otp/confirm \"before all\" hook in \"POST /otp/confirm\"",
                   "timedOut": false,
-                  "duration": 988,
+                  "duration": 1,
                   "state": null,
                   "speed": null,
                   "pass": false,
@@ -227,8 +227,8 @@
                   "context": null,
                   "code": "const nextStep = await worker.getSessionValue('nextStep')\nif (nextStep !== 'requestOtp') {\n  return\n}\nconst token = await worker.getSessionValue('token')\nconst cryptogram = await worker.getSessionValue('cryptogram')\nconst serverPublicKey = await worker.getSessionValue('serverPublicKey')\nconst challange = worker.decrypt(cryptogram, clientPrivateKey)\nconst encryptData = worker.encryptAndSign(\n  {\n    challengePass: challange,\n    otp\n  },\n  serverPublicKey,\n  clientPrivateKey\n)\nresponse = await request(baseUrl)\n  .post('/auth/v4/otp/confirm')\n  .set('Authorization', `Bearer ${token}`)\n  .send({\n    sign: encryptData.sign,\n    cryptogram: encryptData.cryptogram\n  })\nawait worker.setSessionValue('cryptogram', response.body.cryptogram)\nawait worker.setSessionValue('nextStep', response.body.nextStep)",
                   "err": {},
-                  "uuid": "115b561d-0847-4247-afc7-594c67e00585",
-                  "parentUUID": "fd82221c-6683-4abb-9f7a-22c3f67a7592",
+                  "uuid": "dd3a7f6c-291c-4620-b17b-53d42055808a",
+                  "parentUUID": "919997f8-fddb-426c-80d4-843cc39c3c77",
                   "isHook": true,
                   "skipped": false
                 }
@@ -240,16 +240,16 @@
                   "fullTitle": "Авторизація POST /otp/confirm should return 200 OK status code",
                   "timedOut": false,
                   "duration": 0,
-                  "state": "passed",
-                  "speed": "fast",
-                  "pass": true,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
                   "fail": false,
-                  "pending": false,
+                  "pending": true,
                   "context": null,
                   "code": "if (!response) {\n  this.skip() // Пропустити виконання тесту\n}\nexpect(response.statusCode).to.equal(200)",
                   "err": {},
-                  "uuid": "8350a697-bd7c-4c63-aeae-b27fdcb97efd",
-                  "parentUUID": "fd82221c-6683-4abb-9f7a-22c3f67a7592",
+                  "uuid": "9b050e1c-e59c-451a-9238-bd48b19f0ec4",
+                  "parentUUID": "919997f8-fddb-426c-80d4-843cc39c3c77",
                   "isHook": false,
                   "skipped": false
                 },
@@ -258,27 +258,27 @@
                   "fullTitle": "Авторизація POST /otp/confirm should contain valid JSON schema",
                   "timedOut": false,
                   "duration": 0,
-                  "state": "passed",
-                  "speed": "fast",
-                  "pass": true,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
                   "fail": false,
-                  "pending": false,
+                  "pending": true,
                   "context": null,
                   "code": "if (!response) {\n  this.skip() // Пропустити виконання тесту\n}\nconst schema = {\n  type: 'object',\n  properties: {\n    sign: { type: 'string' },\n    cryptogram: { type: 'string' }\n  },\n  required: ['sign', 'cryptogram']\n}\nconst valid = ajv.validate(schema, response.body)\nif (!valid) {\n  console.error('Data does not match JSON schema:', ajv.errorsText())\n  console.error(response.body)\n}\nexpect(valid).to.be.true",
                   "err": {},
-                  "uuid": "f77aa077-2016-4a8e-8f56-ae34570dd76e",
-                  "parentUUID": "fd82221c-6683-4abb-9f7a-22c3f67a7592",
+                  "uuid": "590f48fb-88dd-4395-907e-efaa3f38c489",
+                  "parentUUID": "919997f8-fddb-426c-80d4-843cc39c3c77",
                   "isHook": false,
                   "skipped": false
                 }
               ],
               "suites": [],
-              "passes": [
-                "8350a697-bd7c-4c63-aeae-b27fdcb97efd",
-                "f77aa077-2016-4a8e-8f56-ae34570dd76e"
-              ],
+              "passes": [],
               "failures": [],
-              "pending": [],
+              "pending": [
+                "9b050e1c-e59c-451a-9238-bd48b19f0ec4",
+                "590f48fb-88dd-4395-907e-efaa3f38c489"
+              ],
               "skipped": [],
               "duration": 0,
               "root": false,
@@ -286,7 +286,7 @@
               "_timeout": 2000
             },
             {
-              "uuid": "8f283a39-ddf5-4c30-a790-ea29a6144fb4",
+              "uuid": "3a8c7966-78b3-4115-b46c-4327dd293d92",
               "title": "POST /enterpassword",
               "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
               "file": "/tests/auth.test.js",
@@ -295,7 +295,7 @@
                   "title": "\"before all\" hook in \"POST /enterpassword\"",
                   "fullTitle": "Авторизація POST /enterpassword \"before all\" hook in \"POST /enterpassword\"",
                   "timedOut": false,
-                  "duration": 389,
+                  "duration": 362,
                   "state": null,
                   "speed": null,
                   "pass": false,
@@ -304,8 +304,8 @@
                   "context": null,
                   "code": "const nextStep = await worker.getSessionValue('nextStep')\nif (nextStep !== 'enterPassword') {\n  return\n}\nconst token = await worker.getSessionValue('token')\nconst cryptogram = await worker.getSessionValue('cryptogram')\nconst serverPublicKey = await worker.getSessionValue('serverPublicKey')\nconst challange = worker.decrypt(cryptogram, clientPrivateKey)\nconst encryptData = worker.encryptAndSign(\n  {\n    challengePass: challange,\n    password\n  },\n  serverPublicKey,\n  clientPrivateKey\n)\nresponse = await request(baseUrl)\n  .post('/auth/v3/enterpassword')\n  .set('Authorization', `Bearer ${token}`)\n  .send({\n    sign: encryptData.sign,\n    cryptogram: encryptData.cryptogram\n  })\nawait worker.setSessionValue('cryptogram', response.body.cryptogram)\nawait worker.setSessionValue('nextStep', response.body.nextStep)\nawait worker.setSessionValue('token', response.body.token)",
                   "err": {},
-                  "uuid": "ccae3709-a926-424e-9f09-e1e24f27e2ff",
-                  "parentUUID": "8f283a39-ddf5-4c30-a790-ea29a6144fb4",
+                  "uuid": "e9c1dcd7-4bfc-415c-8a24-b38f154ee267",
+                  "parentUUID": "3a8c7966-78b3-4115-b46c-4327dd293d92",
                   "isHook": true,
                   "skipped": false
                 }
@@ -325,8 +325,8 @@
                   "context": null,
                   "code": "if (!response) {\n  this.skip()\n}\nexpect(response.statusCode).to.equal(200)",
                   "err": {},
-                  "uuid": "885c5181-1198-4dd6-b9e7-46b2f15237a1",
-                  "parentUUID": "8f283a39-ddf5-4c30-a790-ea29a6144fb4",
+                  "uuid": "95fcc208-1754-45e9-bfdc-576c093a237f",
+                  "parentUUID": "3a8c7966-78b3-4115-b46c-4327dd293d92",
                   "isHook": false,
                   "skipped": false
                 },
@@ -343,16 +343,16 @@
                   "context": null,
                   "code": "if (!response) {\n  this.skip()\n}\nconst schema = {\n  type: 'object',\n  properties: {\n    token: { type: 'string' },\n    name: { type: 'string' },\n    email: { type: 'string' },\n    nextStep: { type: 'string' },\n    sign: { type: 'string' },\n    cryptogram: { type: 'string' }\n  },\n  required: ['token', 'name', 'email', 'nextStep', 'sign', 'cryptogram']\n}\nconst valid = ajv.validate(schema, response.body)\nif (!valid) {\n  console.error('Data does not match JSON schema:', ajv.errorsText())\n  console.error(response.body)\n}\nexpect(valid).to.be.true",
                   "err": {},
-                  "uuid": "bb68e6c6-e4b9-4668-9c58-8ed1e8cc506e",
-                  "parentUUID": "8f283a39-ddf5-4c30-a790-ea29a6144fb4",
+                  "uuid": "12a0b6fd-467a-4810-9d39-d0463b141be0",
+                  "parentUUID": "3a8c7966-78b3-4115-b46c-4327dd293d92",
                   "isHook": false,
                   "skipped": false
                 }
               ],
               "suites": [],
               "passes": [
-                "885c5181-1198-4dd6-b9e7-46b2f15237a1",
-                "bb68e6c6-e4b9-4668-9c58-8ed1e8cc506e"
+                "95fcc208-1754-45e9-bfdc-576c093a237f",
+                "12a0b6fd-467a-4810-9d39-d0463b141be0"
               ],
               "failures": [],
               "pending": [],
@@ -373,7 +373,7 @@
           "_timeout": 2000
         },
         {
-          "uuid": "f43ac670-567c-4dbd-b5b9-53a0d982d1f2",
+          "uuid": "d33cf8c1-18c5-4065-8a09-9329f459fff5",
           "title": "Дашборд",
           "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
           "file": "/tests/auth.test.js",
@@ -382,7 +382,7 @@
               "title": "\"before all\" hook in \"Дашборд\"",
               "fullTitle": "Дашборд \"before all\" hook in \"Дашборд\"",
               "timedOut": false,
-              "duration": 2,
+              "duration": 1,
               "state": null,
               "speed": null,
               "pass": false,
@@ -391,8 +391,8 @@
               "context": null,
               "code": "token = await worker.getSessionValue('token')",
               "err": {},
-              "uuid": "23d6c9ec-bcda-46ad-b08e-7c32d80b9d01",
-              "parentUUID": "f43ac670-567c-4dbd-b5b9-53a0d982d1f2",
+              "uuid": "1a8b5406-7516-4b31-aa72-a5eea0ab2a6e",
+              "parentUUID": "d33cf8c1-18c5-4065-8a09-9329f459fff5",
               "isHook": true,
               "skipped": false
             }
@@ -401,7 +401,7 @@
           "tests": [],
           "suites": [
             {
-              "uuid": "2929b161-5f50-40f8-a151-63aec648ba49",
+              "uuid": "a68d2746-2dca-41fc-a7bf-cf1967ce2d2d",
               "title": "GET /cards",
               "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
               "file": "/tests/auth.test.js",
@@ -410,7 +410,7 @@
                   "title": "\"before all\" hook in \"GET /cards\"",
                   "fullTitle": "Дашборд GET /cards \"before all\" hook in \"GET /cards\"",
                   "timedOut": false,
-                  "duration": 1369,
+                  "duration": 1270,
                   "state": null,
                   "speed": null,
                   "pass": false,
@@ -419,8 +419,8 @@
                   "context": null,
                   "code": "response = await request(baseUrl)\n  .get('/cards/v3?forceCacheReload=true')\n  .set('Authorization', `Bearer ${token}`)\n  .send()\nconst cardAccounts = response.body\nawait worker.setSessionValue('cardAccounts', cardAccounts)",
                   "err": {},
-                  "uuid": "d980a51a-5427-4a30-b2b9-76d7f8daecf8",
-                  "parentUUID": "2929b161-5f50-40f8-a151-63aec648ba49",
+                  "uuid": "fe9232fb-755e-4bfd-aca9-8663142edfab",
+                  "parentUUID": "a68d2746-2dca-41fc-a7bf-cf1967ce2d2d",
                   "isHook": true,
                   "skipped": false
                 }
@@ -431,7 +431,7 @@
                   "title": "should return 200 OK status code",
                   "fullTitle": "Дашборд GET /cards should return 200 OK status code",
                   "timedOut": false,
-                  "duration": 1,
+                  "duration": 0,
                   "state": "passed",
                   "speed": "fast",
                   "pass": true,
@@ -440,8 +440,8 @@
                   "context": null,
                   "code": "expect(response.statusCode).to.equal(200)",
                   "err": {},
-                  "uuid": "96013c34-d4eb-4cee-84c7-4bbf51123a74",
-                  "parentUUID": "2929b161-5f50-40f8-a151-63aec648ba49",
+                  "uuid": "162e6550-bc19-424d-91f6-5f56e8ca8e89",
+                  "parentUUID": "a68d2746-2dca-41fc-a7bf-cf1967ce2d2d",
                   "isHook": false,
                   "skipped": false
                 },
@@ -449,7 +449,7 @@
                   "title": "should contain valid JSON schema",
                   "fullTitle": "Дашборд GET /cards should contain valid JSON schema",
                   "timedOut": false,
-                  "duration": 20,
+                  "duration": 18,
                   "state": "passed",
                   "speed": "fast",
                   "pass": true,
@@ -458,21 +458,21 @@
                   "context": null,
                   "code": "const schema = require('../json_schema/cards.json')\nconst valid = ajv.validate(schema, response.body)\nif (!valid) {\n  console.error('Data does not match JSON schema:', ajv.errorsText())\n  console.error(response.body)\n}\nexpect(valid).to.be.true",
                   "err": {},
-                  "uuid": "0a60df85-c47a-4a76-ac61-aa73951e7d45",
-                  "parentUUID": "2929b161-5f50-40f8-a151-63aec648ba49",
+                  "uuid": "a2043c2a-7b83-40ea-99ad-c8f7f6569afe",
+                  "parentUUID": "a68d2746-2dca-41fc-a7bf-cf1967ce2d2d",
                   "isHook": false,
                   "skipped": false
                 }
               ],
               "suites": [],
               "passes": [
-                "96013c34-d4eb-4cee-84c7-4bbf51123a74",
-                "0a60df85-c47a-4a76-ac61-aa73951e7d45"
+                "162e6550-bc19-424d-91f6-5f56e8ca8e89",
+                "a2043c2a-7b83-40ea-99ad-c8f7f6569afe"
               ],
               "failures": [],
               "pending": [],
               "skipped": [],
-              "duration": 21,
+              "duration": 18,
               "root": false,
               "rootEmpty": false,
               "_timeout": 2000
@@ -488,7 +488,7 @@
           "_timeout": 2000
         },
         {
-          "uuid": "b8bcc8b1-89c6-4ff4-85f8-b8bd2f990722",
+          "uuid": "9c913268-d0ed-42a9-b212-1a3f6891830f",
           "title": "Переказ з картки на картку",
           "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
           "file": "/tests/auth.test.js",
@@ -497,7 +497,7 @@
               "title": "\"before all\" hook in \"Переказ з картки на картку\"",
               "fullTitle": "Переказ з картки на картку \"before all\" hook in \"Переказ з картки на картку\"",
               "timedOut": false,
-              "duration": 4,
+              "duration": 3,
               "state": null,
               "speed": null,
               "pass": false,
@@ -506,8 +506,8 @@
               "context": null,
               "code": "this.timeout(20000)\ntoken = await worker.getSessionValue('token')\nclientPrivateKey = await worker.getSessionValue('clientPrivateKey')",
               "err": {},
-              "uuid": "64731e18-0899-4f47-8a3b-ef14a1a9ba9d",
-              "parentUUID": "b8bcc8b1-89c6-4ff4-85f8-b8bd2f990722",
+              "uuid": "f3df1b13-04c1-4c11-8ab7-604b5f4cf701",
+              "parentUUID": "9c913268-d0ed-42a9-b212-1a3f6891830f",
               "isHook": true,
               "skipped": false
             }
@@ -516,7 +516,7 @@
           "tests": [],
           "suites": [
             {
-              "uuid": "42344624-1cee-4ab5-a4e2-c992319a67ef",
+              "uuid": "709d0fbb-eabc-4ae2-9e26-1f40bd9eace0",
               "title": "GET /p2p/markup",
               "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
               "file": "/tests/auth.test.js",
@@ -525,7 +525,7 @@
                   "title": "\"before all\" hook in \"GET /p2p/markup\"",
                   "fullTitle": "Переказ з картки на картку GET /p2p/markup \"before all\" hook in \"GET /p2p/markup\"",
                   "timedOut": false,
-                  "duration": 551,
+                  "duration": 592,
                   "state": null,
                   "speed": null,
                   "pass": false,
@@ -534,8 +534,8 @@
                   "context": null,
                   "code": "response = await request(baseUrl)\n  .get('/payments/p2p/markup')\n  .set('Authorization', `Bearer ${token}`)\n  .send()\nconst cryptogram = response.body.cryptogram\nconst sessionGuid = response.body.sessionGuid\nawait worker.setSessionValue('cryptogram', cryptogram)\nawait worker.setSessionValue('sessionGuid', sessionGuid)",
                   "err": {},
-                  "uuid": "8622f607-ca92-4914-ad40-7ea209560542",
-                  "parentUUID": "42344624-1cee-4ab5-a4e2-c992319a67ef",
+                  "uuid": "ec3a0fb2-fd48-47e6-99a5-e5687f5fab1c",
+                  "parentUUID": "709d0fbb-eabc-4ae2-9e26-1f40bd9eace0",
                   "isHook": true,
                   "skipped": false
                 }
@@ -555,8 +555,8 @@
                   "context": null,
                   "code": "expect(response.statusCode).to.equal(200)",
                   "err": {},
-                  "uuid": "4e885c84-0e26-4641-a94a-464d628f6e40",
-                  "parentUUID": "42344624-1cee-4ab5-a4e2-c992319a67ef",
+                  "uuid": "b1dae86b-c7c6-42a2-9771-06a5f980f3fe",
+                  "parentUUID": "709d0fbb-eabc-4ae2-9e26-1f40bd9eace0",
                   "isHook": false,
                   "skipped": false
                 },
@@ -564,7 +564,7 @@
                   "title": "should contain valid JSON schema",
                   "fullTitle": "Переказ з картки на картку GET /p2p/markup should contain valid JSON schema",
                   "timedOut": false,
-                  "duration": 13,
+                  "duration": 8,
                   "state": "passed",
                   "speed": "fast",
                   "pass": true,
@@ -573,27 +573,27 @@
                   "context": null,
                   "code": "const schema = require('../json_schema/p2p_markup.json')\nconst valid = ajv.validate(schema, response.body)\nif (!valid) {\n  console.error('Data does not match JSON schema:', ajv.errorsText())\n  console.error(response.body)\n}\nexpect(valid).to.be.true",
                   "err": {},
-                  "uuid": "744ef3fc-bb19-49e2-94a6-7730cb92f0a7",
-                  "parentUUID": "42344624-1cee-4ab5-a4e2-c992319a67ef",
+                  "uuid": "90974911-1417-4a20-ba64-bdd86320385b",
+                  "parentUUID": "709d0fbb-eabc-4ae2-9e26-1f40bd9eace0",
                   "isHook": false,
                   "skipped": false
                 }
               ],
               "suites": [],
               "passes": [
-                "4e885c84-0e26-4641-a94a-464d628f6e40",
-                "744ef3fc-bb19-49e2-94a6-7730cb92f0a7"
+                "b1dae86b-c7c6-42a2-9771-06a5f980f3fe",
+                "90974911-1417-4a20-ba64-bdd86320385b"
               ],
               "failures": [],
               "pending": [],
               "skipped": [],
-              "duration": 13,
+              "duration": 8,
               "root": false,
               "rootEmpty": false,
               "_timeout": 2000
             },
             {
-              "uuid": "2b742b6f-28e6-4530-b592-ad2d3742fe3c",
+              "uuid": "3b3aaa6f-eb03-4a34-9366-74c6c45349fd",
               "title": "GET /p2p/setInput",
               "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
               "file": "/tests/auth.test.js",
@@ -602,7 +602,7 @@
                   "title": "\"before all\" hook in \"GET /p2p/setInput\"",
                   "fullTitle": "Переказ з картки на картку GET /p2p/setInput \"before all\" hook in \"GET /p2p/setInput\"",
                   "timedOut": false,
-                  "duration": 4639,
+                  "duration": 4492,
                   "state": null,
                   "speed": null,
                   "pass": false,
@@ -611,8 +611,8 @@
                   "context": null,
                   "code": "this.timeout(20000)\nconst cardAccounts = await worker.getSessionValue('cardAccounts')\nconst cryptogram = await worker.getSessionValue('cryptogram')\nconst sessionGuid = await worker.getSessionValue('sessionGuid')\nconst serverPublicKey = await worker.getSessionValue('serverPublicKey')\nconst challange = worker.decrypt(cryptogram, clientPrivateKey)\nconst encryptData = worker.encryptAndSign(\n  {\n    challengePass: challange\n  },\n  serverPublicKey,\n  clientPrivateKey\n)\npayerCard = await worker.findCardByName(cardAccounts, payerCardName)\nconst amount = await worker.randomAmount()\nresponse = await request(baseUrl)\n  .post('/payments/p2p/setInput')\n  .set('Authorization', `Bearer ${token}`)\n  .send({\n    sign: encryptData.sign,\n    cryptogram: encryptData.cryptogram,\n    sessionGuid,\n    payerId: `cardNumber:${payerCard.cards[0].cardNumber}`,\n    recipientId: `cardNumber:${recipientCardNumber}`,\n    amount\n  })\nawait worker.setSessionValue('cryptogram', response.body.cryptogram)",
                   "err": {},
-                  "uuid": "c1bc368d-2924-4473-a39a-1f52c5f600c7",
-                  "parentUUID": "2b742b6f-28e6-4530-b592-ad2d3742fe3c",
+                  "uuid": "e7d8f892-3da7-406b-8f37-a7f627462bd7",
+                  "parentUUID": "3b3aaa6f-eb03-4a34-9366-74c6c45349fd",
                   "isHook": true,
                   "skipped": false
                 }
@@ -632,8 +632,8 @@
                   "context": null,
                   "code": "expect(response.statusCode).to.equal(200)",
                   "err": {},
-                  "uuid": "3a452b8c-868d-4ffa-9bf1-2b45bcaa468c",
-                  "parentUUID": "2b742b6f-28e6-4530-b592-ad2d3742fe3c",
+                  "uuid": "fe50c4d0-2450-4d95-8c70-a0920c654cd4",
+                  "parentUUID": "3b3aaa6f-eb03-4a34-9366-74c6c45349fd",
                   "isHook": false,
                   "skipped": false
                 },
@@ -641,7 +641,7 @@
                   "title": "should contain valid JSON schema",
                   "fullTitle": "Переказ з картки на картку GET /p2p/setInput should contain valid JSON schema",
                   "timedOut": false,
-                  "duration": 1,
+                  "duration": 3,
                   "state": "passed",
                   "speed": "fast",
                   "pass": true,
@@ -650,27 +650,27 @@
                   "context": null,
                   "code": "const schema = require('../json_schema/p2p_setInput.json')\nconst valid = ajv.validate(schema, response.body)\nif (!valid) {\n  console.error('Data does not match JSON schema:', ajv.errorsText())\n  console.error(response.body)\n}\nexpect(valid).to.be.true",
                   "err": {},
-                  "uuid": "2c65452f-7903-4b91-895c-e32f42b05e25",
-                  "parentUUID": "2b742b6f-28e6-4530-b592-ad2d3742fe3c",
+                  "uuid": "ea8dad7e-f541-4a45-9248-538999dd0626",
+                  "parentUUID": "3b3aaa6f-eb03-4a34-9366-74c6c45349fd",
                   "isHook": false,
                   "skipped": false
                 }
               ],
               "suites": [],
               "passes": [
-                "3a452b8c-868d-4ffa-9bf1-2b45bcaa468c",
-                "2c65452f-7903-4b91-895c-e32f42b05e25"
+                "fe50c4d0-2450-4d95-8c70-a0920c654cd4",
+                "ea8dad7e-f541-4a45-9248-538999dd0626"
               ],
               "failures": [],
               "pending": [],
               "skipped": [],
-              "duration": 1,
+              "duration": 3,
               "root": false,
               "rootEmpty": false,
               "_timeout": 2000
             },
             {
-              "uuid": "6674aa97-c023-4801-aa9a-751067be4ee1",
+              "uuid": "9111fc56-5fe7-4f90-80cb-1f2cc8d21c76",
               "title": "GET /p2p/commission",
               "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
               "file": "/tests/auth.test.js",
@@ -679,7 +679,7 @@
                   "title": "\"before all\" hook in \"GET /p2p/commission\"",
                   "fullTitle": "Переказ з картки на картку GET /p2p/commission \"before all\" hook in \"GET /p2p/commission\"",
                   "timedOut": false,
-                  "duration": 2192,
+                  "duration": 1844,
                   "state": null,
                   "speed": null,
                   "pass": false,
@@ -688,8 +688,8 @@
                   "context": null,
                   "code": "this.timeout(20000)\nresponse = await request(baseUrl)\n  .get('/payments/p2p/commission')\n  .set('Authorization', `Bearer ${token}`)\n  .send()",
                   "err": {},
-                  "uuid": "49f8a12d-f933-4ddf-9653-43e6e129a977",
-                  "parentUUID": "6674aa97-c023-4801-aa9a-751067be4ee1",
+                  "uuid": "abc929da-a8f3-489c-b589-349285b2a51a",
+                  "parentUUID": "9111fc56-5fe7-4f90-80cb-1f2cc8d21c76",
                   "isHook": true,
                   "skipped": false
                 }
@@ -709,8 +709,8 @@
                   "context": null,
                   "code": "expect(response.statusCode).to.equal(200)",
                   "err": {},
-                  "uuid": "796ee0bf-69d4-4123-92a0-0b06d3d54679",
-                  "parentUUID": "6674aa97-c023-4801-aa9a-751067be4ee1",
+                  "uuid": "9041cf22-9166-4234-8be5-d4554f5c136b",
+                  "parentUUID": "9111fc56-5fe7-4f90-80cb-1f2cc8d21c76",
                   "isHook": false,
                   "skipped": false
                 },
@@ -718,7 +718,7 @@
                   "title": "should contain valid JSON schema",
                   "fullTitle": "Переказ з картки на картку GET /p2p/commission should contain valid JSON schema",
                   "timedOut": false,
-                  "duration": 2,
+                  "duration": 3,
                   "state": "passed",
                   "speed": "fast",
                   "pass": true,
@@ -727,27 +727,27 @@
                   "context": null,
                   "code": "const schema = require('../json_schema/p2p_commission.json')\nconst valid = ajv.validate(schema, response.body)\nif (!valid) {\n  console.error('Data does not match JSON schema:', ajv.errorsText())\n  console.error(response.body)\n}\nexpect(valid).to.be.true",
                   "err": {},
-                  "uuid": "10dbea85-2978-4c91-9720-02999a3e03dc",
-                  "parentUUID": "6674aa97-c023-4801-aa9a-751067be4ee1",
+                  "uuid": "c2dc2879-b33a-4ee5-bc62-5c44d5fc4e0a",
+                  "parentUUID": "9111fc56-5fe7-4f90-80cb-1f2cc8d21c76",
                   "isHook": false,
                   "skipped": false
                 }
               ],
               "suites": [],
               "passes": [
-                "796ee0bf-69d4-4123-92a0-0b06d3d54679",
-                "10dbea85-2978-4c91-9720-02999a3e03dc"
+                "9041cf22-9166-4234-8be5-d4554f5c136b",
+                "c2dc2879-b33a-4ee5-bc62-5c44d5fc4e0a"
               ],
               "failures": [],
               "pending": [],
               "skipped": [],
-              "duration": 2,
+              "duration": 3,
               "root": false,
               "rootEmpty": false,
               "_timeout": 2000
             },
             {
-              "uuid": "3c6b2870-5620-4980-887c-b285902afbf5",
+              "uuid": "01fdd6bc-92f9-42e4-90da-d9111df27bfe",
               "title": "GET /p2p/confirm",
               "fullFile": "/Users/andriidydyk/Documents/BV_Automation/tests/auth.test.js",
               "file": "/tests/auth.test.js",
@@ -756,7 +756,7 @@
                   "title": "\"before all\" hook in \"GET /p2p/confirm\"",
                   "fullTitle": "Переказ з картки на картку GET /p2p/confirm \"before all\" hook in \"GET /p2p/confirm\"",
                   "timedOut": false,
-                  "duration": 1068,
+                  "duration": 1119,
                   "state": null,
                   "speed": null,
                   "pass": false,
@@ -765,8 +765,8 @@
                   "context": null,
                   "code": "this.timeout(20000)\nconst cryptogram = await worker.getSessionValue('cryptogram')\nconst sessionGuid = await worker.getSessionValue('sessionGuid')\nconst serverPublicKey = await worker.getSessionValue('serverPublicKey')\nconst challange = worker.decrypt(cryptogram, clientPrivateKey)\nconst encryptData = worker.encryptAndSign(\n  {\n    challengePass: challange,\n    password\n  },\n  serverPublicKey,\n  clientPrivateKey\n)\nresponse = await request(baseUrl)\n  .post('/payments/p2p/confirm')\n  .set('Authorization', `Bearer ${token}`)\n  .send({\n    sign: encryptData.sign,\n    cryptogram: encryptData.cryptogram,\n    sessionGuid\n  })\nawait worker.setSessionValue('cryptogram', response.body.cryptogram)",
                   "err": {},
-                  "uuid": "167b8ba2-c704-4933-a645-489005ac293a",
-                  "parentUUID": "3c6b2870-5620-4980-887c-b285902afbf5",
+                  "uuid": "40bbbef7-2a82-4478-ae1d-21cd3142e3a7",
+                  "parentUUID": "01fdd6bc-92f9-42e4-90da-d9111df27bfe",
                   "isHook": true,
                   "skipped": false
                 }
@@ -786,8 +786,8 @@
                   "context": null,
                   "code": "expect(response.statusCode).to.equal(200)",
                   "err": {},
-                  "uuid": "49e96142-3ce5-4f57-92f1-f1f97b53e75c",
-                  "parentUUID": "3c6b2870-5620-4980-887c-b285902afbf5",
+                  "uuid": "b05c6ddb-57a8-4633-8daf-a01f4c64c393",
+                  "parentUUID": "01fdd6bc-92f9-42e4-90da-d9111df27bfe",
                   "isHook": false,
                   "skipped": false
                 },
@@ -795,7 +795,7 @@
                   "title": "should contain valid JSON schema",
                   "fullTitle": "Переказ з картки на картку GET /p2p/confirm should contain valid JSON schema",
                   "timedOut": false,
-                  "duration": 5,
+                  "duration": 6,
                   "state": "failed",
                   "speed": null,
                   "pass": false,
@@ -808,8 +808,8 @@
                     "estack": "AssertionError: expected false to be true\n    at Context.<anonymous> (tests/auth.test.js:479:26)\n    at process.processImmediate (node:internal/timers:478:21)",
                     "diff": null
                   },
-                  "uuid": "24d9e81c-af15-431f-ba23-dadc6cfe95ff",
-                  "parentUUID": "3c6b2870-5620-4980-887c-b285902afbf5",
+                  "uuid": "1e85ed90-7cf3-463a-a21d-701634c57844",
+                  "parentUUID": "01fdd6bc-92f9-42e4-90da-d9111df27bfe",
                   "isHook": false,
                   "skipped": false
                 },
@@ -826,8 +826,8 @@
                   "context": null,
                   "code": "expect(response.body.operation.title).to.equal(\n  'Переказ з картки на картку'\n)",
                   "err": {},
-                  "uuid": "c1123a64-5dd2-47da-a56d-6a2f75c3d159",
-                  "parentUUID": "3c6b2870-5620-4980-887c-b285902afbf5",
+                  "uuid": "67ede197-cce8-4fe5-a1bd-68a0356b7bf4",
+                  "parentUUID": "01fdd6bc-92f9-42e4-90da-d9111df27bfe",
                   "isHook": false,
                   "skipped": false
                 },
@@ -844,8 +844,8 @@
                   "context": null,
                   "code": "expect(response.body.operation.subtitle).to.equal(\n  'Переказ з картки на картку'\n)",
                   "err": {},
-                  "uuid": "be080ecf-e3a5-4a0d-b0b3-f06c1f422648",
-                  "parentUUID": "3c6b2870-5620-4980-887c-b285902afbf5",
+                  "uuid": "31016d6f-fca2-47f3-bc83-9aabfad94c49",
+                  "parentUUID": "01fdd6bc-92f9-42e4-90da-d9111df27bfe",
                   "isHook": false,
                   "skipped": false
                 },
@@ -862,8 +862,8 @@
                   "context": null,
                   "code": "expect(response.body.operation.status).to.equal('processing')",
                   "err": {},
-                  "uuid": "e9230447-8bf9-4d59-ab48-deac2795939c",
-                  "parentUUID": "3c6b2870-5620-4980-887c-b285902afbf5",
+                  "uuid": "a282dfe4-7130-4bbb-9a5e-9fc176786f6d",
+                  "parentUUID": "01fdd6bc-92f9-42e4-90da-d9111df27bfe",
                   "isHook": false,
                   "skipped": false
                 },
@@ -871,7 +871,7 @@
                   "title": "should have correct dark icon URL",
                   "fullTitle": "Переказ з картки на картку GET /p2p/confirm should have correct dark icon URL",
                   "timedOut": false,
-                  "duration": 1,
+                  "duration": 0,
                   "state": "passed",
                   "speed": "fast",
                   "pass": true,
@@ -880,8 +880,8 @@
                   "context": null,
                   "code": "expect(response.body.operation.darkIcon).to.equal(\n  'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Dark.png'\n)",
                   "err": {},
-                  "uuid": "1fc82f5e-9f06-460f-a6d2-117c84870b9c",
-                  "parentUUID": "3c6b2870-5620-4980-887c-b285902afbf5",
+                  "uuid": "38f94544-a871-4252-9eed-e51bef3b508f",
+                  "parentUUID": "01fdd6bc-92f9-42e4-90da-d9111df27bfe",
                   "isHook": false,
                   "skipped": false
                 },
@@ -898,23 +898,23 @@
                   "context": null,
                   "code": "expect(response.body.operation.lightIcon).to.equal(\n  'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'\n)",
                   "err": {},
-                  "uuid": "3e9f4c52-4422-446a-916a-480c1658fc5a",
-                  "parentUUID": "3c6b2870-5620-4980-887c-b285902afbf5",
+                  "uuid": "8814e5bd-9911-4c3c-bde4-d40fa1562a1b",
+                  "parentUUID": "01fdd6bc-92f9-42e4-90da-d9111df27bfe",
                   "isHook": false,
                   "skipped": false
                 }
               ],
               "suites": [],
               "passes": [
-                "49e96142-3ce5-4f57-92f1-f1f97b53e75c",
-                "c1123a64-5dd2-47da-a56d-6a2f75c3d159",
-                "be080ecf-e3a5-4a0d-b0b3-f06c1f422648",
-                "e9230447-8bf9-4d59-ab48-deac2795939c",
-                "1fc82f5e-9f06-460f-a6d2-117c84870b9c",
-                "3e9f4c52-4422-446a-916a-480c1658fc5a"
+                "b05c6ddb-57a8-4633-8daf-a01f4c64c393",
+                "67ede197-cce8-4fe5-a1bd-68a0356b7bf4",
+                "31016d6f-fca2-47f3-bc83-9aabfad94c49",
+                "a282dfe4-7130-4bbb-9a5e-9fc176786f6d",
+                "38f94544-a871-4252-9eed-e51bef3b508f",
+                "8814e5bd-9911-4c3c-bde4-d40fa1562a1b"
               ],
               "failures": [
-                "24d9e81c-af15-431f-ba23-dadc6cfe95ff"
+                "1e85ed90-7cf3-463a-a21d-701634c57844"
               ],
               "pending": [],
               "skipped": [],
