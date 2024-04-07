@@ -1,3 +1,3 @@
 # npm install
-# mkdir storage && touch storage/devices.json  storage/keys.json
+# mkdir storage && touch storage/devices.json storage/keys.json
 #

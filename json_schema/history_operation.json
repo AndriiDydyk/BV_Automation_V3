@@ -1,0 +1,27 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "darkIcon": { "type": "string", "format": "uri" },
+      "lightIcon": { "type": "string", "format": "uri" },
+      "id": { "type": "number" },
+      "title": { "type": "string" },
+      "subtitle": { "type": "string" },
+      "status": { "type": "string" },
+      "amountCents": { "type": "number" },
+      "cashbackPoints": { "type": "number" },
+      "dateTime": { "type": "number" }
+    },
+    "required": [
+      "darkIcon",
+      "lightIcon",
+      "id",
+      "title",
+      "subtitle",
+      "status",
+      "amountCents",
+      "dateTime"
+    ]
+  }
+}
