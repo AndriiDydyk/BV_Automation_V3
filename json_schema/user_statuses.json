@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "onFopOrder": { "type": "boolean" },
+    "allowFopOrder": { "type": "boolean" },
+    "allowDepositOrder": { "type": "boolean" },
+    "allowAdditionalCardOrder": { "type": "boolean" },
+    "allowCRS": { "type": "boolean" },
+    "showStartupParameters": { "type": "boolean" }
+  },
+  "required": [
+    "onFopOrder",
+    "allowFopOrder",
+    "allowDepositOrder",
+    "allowAdditionalCardOrder",
+    "allowCRS",
+    "showStartupParameters"
+  ]
+}
