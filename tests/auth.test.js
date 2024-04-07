@@ -301,7 +301,34 @@ describe.only('Дашборд', function () {
       expect(valid).to.be.true
     })
   })
-  
+
+  describe('GET /history/propositions', function () {
+    let response
+
+    before(async () => {
+      response = await request(baseUrl)
+        .get('/history/propositions')
+        .set('Authorization', `Bearer ${token}`)
+        .send()
+    })
+
+    it('should return 200 OK status code', function () {
+      expect(response.statusCode).to.equal(200)
+    })
+
+    it('should contain valid JSON schema', function () {
+      const schema = require('../json_schema/history_propositions.json')
+      const valid = ajv.validate(schema, response.body)
+
+      if (!valid) {
+        console.error('Data does not match JSON schema:', ajv.errorsText())
+        console.error(response.body)
+      }
+
+      expect(valid).to.be.true
+    })
+  })
+
 })
 
 describe('Переказ з картки на картку', function () {

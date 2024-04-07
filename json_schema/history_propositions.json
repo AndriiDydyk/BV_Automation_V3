@@ -1,0 +1,21 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "id": { "type": "integer" },
+            "isRead": { "type": "boolean" },
+            "title": { "type": "string" },
+            "subtitle": { "type": "string" },
+            "animationImageUrl": { "type": "string" },
+            "imageUrl": { "type": "string" },
+            "dateTime": { "type": "integer" },
+            "imageType": { "type": "string" }
+        },
+        "required": ["id", "isRead", "title", "dateTime", "imageType"],
+        "anyOf": [
+            { "required": ["animationImageUrl"] },
+            { "required": ["imageUrl"] }
+        ]
+    }
+}
