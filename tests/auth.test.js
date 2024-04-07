@@ -17,8 +17,10 @@ describe.only('Авторизація', function () {
   let device
 
   before(async () => {
+    await worker.loadKeys()
+    await worker.loadDevices()
+
     clientPublicKey = await worker.getSessionValue('clientPublicKey')
-    // device = await worker.getSessionValue('iosReleaseDevice')
     device = await worker.getSessionValue('iosDebugDevice')
   })
 

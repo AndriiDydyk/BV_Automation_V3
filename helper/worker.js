@@ -15,6 +15,20 @@ class Worker {
     }
   }
 
+  async loadDevices () {
+    const devices = await this.readJsonFile('./storage/devices.json')
+
+    await this.setSessionValue('iosReleaseDevice', devices.iosReleaseDevice)
+    await this.setSessionValue('iosDebugDevice', devices.iosDebugDevice)
+  }
+
+  async loadKeys () {
+    const keys = await this.readJsonFile('./storage/keys.json')
+
+    await this.setSessionValue('clientPublicKey', keys.clientPublicKey)
+    await this.setSessionValue('clientPrivateKey', keys.clientPrivateKey)
+  }
+
   async setSessionValue (key, value) {
     const redis = new Redis()
     try {
