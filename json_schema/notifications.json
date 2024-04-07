@@ -1,0 +1,22 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "id": { "type": "integer" },
+            "notificationTemplateId": { "type": "integer" },
+            "isRead": { "type": "boolean" },
+            "messageId": { "type": "string" },
+            "title": { "type": "string" },
+            "shortText": { "type": "string" },
+            "creationDate": { "type": "integer" }
+        },
+        "required": [
+            "id",
+            "notificationTemplateId",
+            "isRead",
+            "messageId",
+            "creationDate"
+        ]
+    }
+}

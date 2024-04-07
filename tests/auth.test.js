@@ -4,7 +4,7 @@ const Worker = require('../helper/worker')
 const Ajv = require('ajv')
 const { expect } = require('chai')
 
-const baseUrl = 'https://bv.api.vostok.bank'
+const baseUrl = 'https://bv.test.api.vostok.bank'
 const phoneNumber = '380660007201'
 const otp = '111111'
 const password = 'Qwerty12345'
@@ -236,7 +236,7 @@ describe('Авторизація', function () {
   })
 })
 
-describe('Дашборд', function () {
+describe.only('Дашборд', function () {
   const ajv = new Ajv()
   const worker = new Worker()
   let token
@@ -274,6 +274,34 @@ describe('Дашборд', function () {
       expect(valid).to.be.true
     })
   })
+
+  describe('GET /notifications', function () {
+    let response
+
+    before(async () => {
+      response = await request(baseUrl)
+        .get('/notifications/v2?skip=0')
+        .set('Authorization', `Bearer ${token}`)
+        .send()
+    })
+
+    it('should return 200 OK status code', function () {
+      expect(response.statusCode).to.equal(200)
+    })
+
+    it('should contain valid JSON schema', function () {
+      const schema = require('../json_schema/notifications.json')
+      const valid = ajv.validate(schema, response.body)
+
+      if (!valid) {
+        console.error('Data does not match JSON schema:', ajv.errorsText())
+        console.error(response.body)
+      }
+
+      expect(valid).to.be.true
+    })
+  })
+  
 })
 
 describe('Переказ з картки на картку', function () {
@@ -281,7 +309,7 @@ describe('Переказ з картки на картку', function () {
   const worker = new Worker()
 
   const payerCardName = 'Додаткова UAH'
-  const recipientCardNumber = '5168130700992300'
+  const recipientCardNumber = '5235020700462264'
 
   let token
   let payerCard
