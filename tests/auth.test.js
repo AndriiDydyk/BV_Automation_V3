@@ -18,8 +18,8 @@ describe.only('Авторизація', function () {
 
   before(async () => {
     clientPublicKey = await worker.getSessionValue('clientPublicKey')
-    device = await worker.getSessionValue('iosReleaseDevice')
-    // device = await worker.getSessionValue('iosDebugDevice')
+    // device = await worker.getSessionValue('iosReleaseDevice')
+    device = await worker.getSessionValue('iosDebugDevice')
   })
 
   describe('POST /start', function () {
