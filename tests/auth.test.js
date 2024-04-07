@@ -5,22 +5,18 @@ const Ajv = require('ajv')
 const { expect } = require('chai')
 
 const baseUrl = 'https://bv.test.api.vostok.bank'
+const phoneNumber = '380997169404'
+const otp = '111111'
 const password = 'Qwerty12345'
-const phoneNumber = '380660007201'
 
-describe('Авторизація', function () {
+describe.only('Авторизація', function () {
   const ajv = new Ajv()
   const worker = new Worker()
 
-  const otp = '111111'
-  const password = 'Qwerty12345'
-
-  let clientPrivateKey
   let clientPublicKey
   let device
 
   before(async () => {
-    clientPrivateKey = await worker.getSessionValue('clientPrivateKey')
     clientPublicKey = await worker.getSessionValue('clientPublicKey')
     device = await worker.getSessionValue('iosReleaseDevice')
     // device = await worker.getSessionValue('iosDebugDevice')
@@ -75,17 +71,11 @@ describe('Авторизація', function () {
 
     before(async () => {
       const token = await worker.getSessionValue('token')
-      const cryptogram = await worker.getSessionValue('cryptogram')
-      const serverPublicKey = await worker.getSessionValue('serverPublicKey')
 
-      const challange = worker.decrypt(cryptogram, clientPrivateKey)
-      const encryptData = worker.encryptAndSign(
-        {
-          challengePass: challange
-        },
-        serverPublicKey,
-        clientPrivateKey
-      )
+      const challange = await worker.decrypt_v2()
+      const encryptData = await worker.encryptAndSign_v2({
+        challengePass: challange
+      })
 
       response = await request(baseUrl)
         .post('/auth/v4/nextstep')
@@ -132,18 +122,12 @@ describe('Авторизація', function () {
       }
 
       const token = await worker.getSessionValue('token')
-      const cryptogram = await worker.getSessionValue('cryptogram')
-      const serverPublicKey = await worker.getSessionValue('serverPublicKey')
 
-      const challange = worker.decrypt(cryptogram, clientPrivateKey)
-      const encryptData = worker.encryptAndSign(
-        {
-          challengePass: challange,
-          otp
-        },
-        serverPublicKey,
-        clientPrivateKey
-      )
+      const challange = await worker.decrypt_v2()
+      const encryptData = await worker.encryptAndSign_v2({
+        challengePass: challange,
+        otp
+      })
 
       response = await request(baseUrl)
         .post('/auth/v4/otp/confirm')
@@ -196,18 +180,12 @@ describe('Авторизація', function () {
       }
 
       const token = await worker.getSessionValue('token')
-      const cryptogram = await worker.getSessionValue('cryptogram')
-      const serverPublicKey = await worker.getSessionValue('serverPublicKey')
 
-      const challange = worker.decrypt(cryptogram, clientPrivateKey)
-      const encryptData = worker.encryptAndSign(
-        {
-          challengePass: challange,
-          password
-        },
-        serverPublicKey,
-        clientPrivateKey
-      )
+      const challange = await worker.decrypt_v2()
+      const encryptData = await worker.encryptAndSign_v2({
+        challengePass: challange,
+        password
+      })
 
       response = await request(baseUrl)
         .post('/auth/v3/enterpassword')

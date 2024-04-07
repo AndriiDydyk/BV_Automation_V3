@@ -69,7 +69,29 @@ class Worker {
     return privateKeyObject.decrypt(decrypted, 'RSA-OAEP')
   }
 
+  async decrypt_v2 () {
+    const cryptogram = await this.getSessionValue('cryptogram')
+    const privateKey = await this.getSessionValue('clientPrivateKey')
+
+    const privateKeyObject = forge.pki.privateKeyFromPem(privateKey)
+    const decrypted = forge.util.decode64(cryptogram)
+
+    return privateKeyObject.decrypt(decrypted, 'RSA-OAEP')
+  }
+
   encryptAndSign (dataToEncrypt, serverPublicKey, clientPrivateKey) {
+    const jsonToEncrypt = JSON.stringify(dataToEncrypt)
+    const encryptedBytes = this.encrypt(jsonToEncrypt, serverPublicKey)
+    const cryptogram = forge.util.encode64(encryptedBytes)
+    const sign = this.signSha512(cryptogram, clientPrivateKey)
+
+    return { sign, cryptogram }
+  }
+
+  async encryptAndSign_v2 (dataToEncrypt) {
+    const serverPublicKey = await this.getSessionValue('serverPublicKey')
+    const clientPrivateKey = await this.getSessionValue('clientPrivateKey')
+
     const jsonToEncrypt = JSON.stringify(dataToEncrypt)
     const encryptedBytes = this.encrypt(jsonToEncrypt, serverPublicKey)
     const cryptogram = forge.util.encode64(encryptedBytes)
