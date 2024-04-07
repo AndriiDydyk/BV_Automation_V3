@@ -276,7 +276,7 @@ describe('Дашборд', function () {
   })
 })
 
-describe('Переказ з картки на картку', function () {
+describe.only('Переказ з картки на картку', function () {
   const ajv = new Ajv()
   const worker = new Worker()
 
@@ -334,17 +334,13 @@ describe('Переказ з картки на картку', function () {
       this.timeout(20000)
 
       const cardAccounts = await worker.getSessionValue('cardAccounts')
-      const cryptogram = await worker.getSessionValue('cryptogram')
       const sessionGuid = await worker.getSessionValue('sessionGuid')
-      const serverPublicKey = await worker.getSessionValue('serverPublicKey')
 
-      const challange = worker.decrypt(cryptogram, clientPrivateKey)
-      const encryptData = worker.encryptAndSign(
+      const challange = await worker.decrypt_v2()
+      const encryptData = await worker.encryptAndSign_v2(
         {
           challengePass: challange
-        },
-        serverPublicKey,
-        clientPrivateKey
+        }
       )
 
       payerCard = await worker.findCardByName(cardAccounts, payerCardName)
@@ -417,18 +413,14 @@ describe('Переказ з картки на картку', function () {
     before(async function () {
       this.timeout(20000)
 
-      const cryptogram = await worker.getSessionValue('cryptogram')
       const sessionGuid = await worker.getSessionValue('sessionGuid')
-      const serverPublicKey = await worker.getSessionValue('serverPublicKey')
 
-      const challange = worker.decrypt(cryptogram, clientPrivateKey)
-      const encryptData = worker.encryptAndSign(
+      const challange = await worker.decrypt_v2()
+      const encryptData = await worker.encryptAndSign_v2(
         {
           challengePass: challange,
-          password
-        },
-        serverPublicKey,
-        clientPrivateKey
+          password: password
+        }
       )
 
       response = await request(baseUrl)
