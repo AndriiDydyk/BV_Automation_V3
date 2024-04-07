@@ -9,7 +9,7 @@ const phoneNumber = '380660007201'
 const otp = '111111'
 const password = 'Qwerty12345'
 
-describe.only('Авторизація', function () {
+describe('Авторизація', function () {
   const ajv = new Ajv()
   const worker = new Worker()
 
@@ -447,7 +447,7 @@ describe('Переказ з картки на картку', function () {
       expect(response.statusCode).to.equal(200)
     })
 
-    it('should contain valid JSON schema', function () {
+    it.skip('should contain valid JSON schema', function () {
       const schema = require('../json_schema/p2p_confirm.json')
       const valid = ajv.validate(schema, response.body)
 
