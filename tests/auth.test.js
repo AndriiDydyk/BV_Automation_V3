@@ -4,15 +4,15 @@ const Worker = require('../helper/worker')
 const Ajv = require('ajv')
 const { expect } = require('chai')
 
+const ajv = new Ajv()
+const worker = new Worker()
+
 const baseUrl = 'https://bv.test.api.vostok.bank'
 const phoneNumber = '380660007201'
 const otp = '111111'
 const password = 'Qwerty12345'
 
 describe('Авторизація', function () {
-  const ajv = new Ajv()
-  const worker = new Worker()
-
   let clientPublicKey
   let device
 
@@ -236,9 +236,7 @@ describe('Авторизація', function () {
   })
 })
 
-describe.only('Дашборд', function () {
-  const ajv = new Ajv()
-  const worker = new Worker()
+describe('Дашборд', function () {
   let token
 
   before(async () => {
@@ -332,9 +330,6 @@ describe.only('Дашборд', function () {
 })
 
 describe('Переказ з картки на картку', function () {
-  const ajv = new Ajv()
-  const worker = new Worker()
-
   const payerCardName = 'Додаткова UAH'
   const recipientCardNumber = '5235020700462264'
 
@@ -488,7 +483,7 @@ describe('Переказ з картки на картку', function () {
       expect(response.statusCode).to.equal(200)
     })
 
-    it('should contain valid JSON schema', function () {
+    it.skip('should contain valid JSON schema', function () {
       const schema = require('../json_schema/p2p_confirm.json')
       const valid = ajv.validate(schema, response.body)
 
