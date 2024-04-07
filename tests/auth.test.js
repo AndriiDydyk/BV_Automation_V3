@@ -5,7 +5,7 @@ const Ajv = require('ajv')
 const { expect } = require('chai')
 
 const baseUrl = 'https://bv.test.api.vostok.bank'
-const phoneNumber = '380997169404'
+const phoneNumber = '380660007201'
 const otp = '111111'
 const password = 'Qwerty12345'
 
@@ -21,7 +21,7 @@ describe.only('Авторизація', function () {
     await worker.loadDevices()
 
     clientPublicKey = await worker.getSessionValue('clientPublicKey')
-    device = await worker.getSessionValue('iosDebugDevice')
+    device = await worker.getSessionValue('iosReleaseDevice')
   })
 
   describe('POST /start', function () {
