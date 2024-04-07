@@ -164,6 +164,20 @@ class Worker {
 
     return amount
   }
+  async findOperation(historyOperation, id) {
+    try {
+        const operation = historyOperation.find(item => item.id === id);
+
+        if (!operation) {
+            throw new Error('Операція з вказаним id не знайдена.');
+        }
+
+        return operation;
+    } catch (error) {
+        console.error('Сталася помилка при пошуку операції:', error.message);
+        return null; 
+    }
+}
 }
 
 module.exports = Worker

@@ -4,7 +4,7 @@ const Worker = require('../helper/worker')
 const Ajv = require('ajv')
 const { expect } = require('chai')
 
-const baseUrl = 'https://bv.test.api.vostok.bank'
+const baseUrl = 'https://bv.api.vostok.bank'
 const phoneNumber = '380660007201'
 const otp = '111111'
 const password = 'Qwerty12345'
@@ -281,15 +281,19 @@ describe('Переказ з картки на картку', function () {
   const worker = new Worker()
 
   const payerCardName = 'Додаткова UAH'
-  const recipientCardNumber = '5235020700462264'
+  const recipientCardNumber = '5168130700992300'
 
   let token
   let payerCard
+  let amount
 
   before(async function () {
     this.timeout(20000)
+    const cardAccounts = await worker.getSessionValue('cardAccounts')
 
     token = await worker.getSessionValue('token')
+    payerCard = await worker.findCardByName(cardAccounts, payerCardName)
+    amount = await worker.randomAmount()
   })
 
   describe('GET /p2p/markup', function () {
@@ -331,16 +335,12 @@ describe('Переказ з картки на картку', function () {
     before(async function () {
       this.timeout(20000)
 
-      const cardAccounts = await worker.getSessionValue('cardAccounts')
       const sessionGuid = await worker.getSessionValue('sessionGuid')
 
       const challange = await worker.decrypt_v2()
       const encryptData = await worker.encryptAndSign_v2({
         challengePass: challange
       })
-
-      payerCard = await worker.findCardByName(cardAccounts, payerCardName)
-      const amount = await worker.randomAmount()
 
       response = await request(baseUrl)
         .post('/payments/p2p/setInput')
@@ -426,14 +426,14 @@ describe('Переказ з картки на картку', function () {
           sessionGuid
         })
 
-      await worker.setSessionValue('cryptogram', response.body.cryptogram)
+      await worker.setSessionValue('confirmResponse', response.body)
     })
 
     it('should return 200 OK status code', function () {
       expect(response.statusCode).to.equal(200)
     })
 
-    it.skip('should contain valid JSON schema', function () {
+    it('should contain valid JSON schema', function () {
       const schema = require('../json_schema/p2p_confirm.json')
       const valid = ajv.validate(schema, response.body)
 
