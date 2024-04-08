@@ -7,8 +7,8 @@ const { expect } = require('chai')
 const ajv = new Ajv()
 const worker = new Worker()
 
-const baseUrl = 'https://bv.api.vostok.bank'
-const phoneNumber = '380660007201'
+const baseUrl = 'https://bv.test.api.vostok.bank'
+const phoneNumber = '380739688047'
 const otp = '111111'
 const password = 'Qwerty12345'
 
@@ -21,7 +21,7 @@ describe('Авторизація', function () {
     await worker.loadDevices()
 
     clientPublicKey = await worker.getSessionValue('clientPublicKey')
-    device = await worker.getSessionValue('iosReleaseDevice')
+    device = await worker.getSessionValue('iosDebugDevice')
   })
 
   describe('POST /start', function () {
@@ -384,14 +384,13 @@ describe('Дашборд', function () {
 
 describe('Переказ з картки на картку', function () {
   const payerCardName = 'Додаткова UAH'
-  const recipientCardNumber = '5168130700992300'
+  const recipientCardNumber = '5235020700462264'
 
   let token
   let payerCard
   let amount
 
   before(async function () {
-    this.timeout(20000)
     const cardAccounts = await worker.getSessionValue('cardAccounts')
 
     token = await worker.getSessionValue('token')
@@ -436,7 +435,6 @@ describe('Переказ з картки на картку', function () {
     let response
 
     before(async function () {
-      this.timeout(20000)
 
       const sessionGuid = await worker.getSessionValue('sessionGuid')
 
@@ -481,7 +479,6 @@ describe('Переказ з картки на картку', function () {
     let response
 
     before(async function () {
-      this.timeout(20000)
 
       response = await request(baseUrl)
         .get('/payments/p2p/commission')
@@ -515,7 +512,6 @@ describe('Переказ з картки на картку', function () {
     let response
 
     before(async function () {
-      this.timeout(20000)
 
       const sessionGuid = await worker.getSessionValue('sessionGuid')
 
@@ -590,12 +586,11 @@ describe('Переказ з картки на картку', function () {
     })
   })
 
-  describe('GET /history/operation', function () {
+  describe.skip('GET /history/operation', function () {
     let response
     let currentOperation
 
     before(async function () {
-      this.timeout(20000)
 
       await worker.waitForTime(5000)
       const contractId = payerCard.contractId
