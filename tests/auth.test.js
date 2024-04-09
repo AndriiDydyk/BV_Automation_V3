@@ -7,8 +7,8 @@ const { expect } = require('chai')
 const ajv = new Ajv()
 const worker = new Worker()
 
-const baseUrl = 'https://bv.test.api.vostok.bank'
-const phoneNumber = '380739688047'
+const baseUrl = 'https://bv.api.vostok.bank'
+const phoneNumber = '380660007201'
 const otp = '111111'
 const password = 'Qwerty12345'
 
@@ -21,7 +21,7 @@ describe('Авторизація', function () {
     await worker.loadDevices()
 
     clientPublicKey = await worker.getSessionValue('clientPublicKey')
-    device = await worker.getSessionValue('iosDebugDevice')
+    device = await worker.getSessionValue('iosReleaseDevice')
   })
 
   describe('POST /start', function () {
@@ -384,7 +384,7 @@ describe('Дашборд', function () {
 
 describe('Переказ з картки на картку', function () {
   const payerCardName = 'Додаткова UAH'
-  const recipientCardNumber = '5235020700462264'
+  const recipientCardNumber = '5168130721482042'
 
   let token
   let payerCard
@@ -435,7 +435,6 @@ describe('Переказ з картки на картку', function () {
     let response
 
     before(async function () {
-
       const sessionGuid = await worker.getSessionValue('sessionGuid')
 
       const challange = await worker.decrypt_v2()
@@ -479,7 +478,6 @@ describe('Переказ з картки на картку', function () {
     let response
 
     before(async function () {
-
       response = await request(baseUrl)
         .get('/payments/p2p/commission')
         .set('Authorization', `Bearer ${token}`)
@@ -512,7 +510,6 @@ describe('Переказ з картки на картку', function () {
     let response
 
     before(async function () {
-
       const sessionGuid = await worker.getSessionValue('sessionGuid')
 
       const challange = await worker.decrypt_v2()
@@ -586,12 +583,11 @@ describe('Переказ з картки на картку', function () {
     })
   })
 
-  describe.skip('GET /history/operation', function () {
+  describe('GET /history/operation', function () {
     let response
     let currentOperation
 
     before(async function () {
-
       await worker.waitForTime(5000)
       const contractId = payerCard.contractId
 
@@ -650,6 +646,127 @@ describe('Переказ з картки на картку', function () {
       expect(currentOperation.lightIcon).to.equal(
         'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
       )
+    })
+  })
+})
+
+describe('Переказ з іншої картки', function () {
+  let token
+  let amount
+
+  before(async function () {
+    token = await worker.getSessionValue('token')
+  })
+
+  describe('Картка іншого банку => Власна БВ', function () {
+    before(async function () {
+      amount = await worker.randomAmount()
+    })
+
+    describe('GET /p2p/markup', function () {
+      let response
+
+      before(async function () {
+        response = await request(baseUrl)
+          .get('/payments/p2p/markup')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        const cryptogram = response.body.cryptogram
+        const sessionGuid = response.body.sessionGuid
+
+        await worker.setSessionValue('cryptogram', cryptogram)
+        await worker.setSessionValue('sessionGuid', sessionGuid)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('GET /p2p/setInput', function () {
+      let response
+
+      before(async function () {
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
+
+        const challange = await worker.decrypt_v2()
+        const encryptData = await worker.encryptAndSign_v2({
+          challengePass: challange,
+          cvv: '415',
+          expiryDate: '29.02.2028'
+        })
+
+        response = await request(baseUrl)
+          .post('/payments/p2p/setInput')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid,
+            payerId: 'cardNumber:5375411507798101',
+            recipientId: 'cardNumber:5168130700506316',
+            amount
+          })
+
+        const url = response.body['3ds'].url
+        await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        await worker.openInBrowser(url)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('GET /p2p/commission', function () {
+      let response
+
+      before(async function () {
+        await worker.waitForTime(20000)
+
+        response = await request(baseUrl)
+          .get('/payments/p2p/commission')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('GET /p2p/confirm', function () {
+      let response
+
+      before(async function () {
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
+
+        const challange = await worker.decrypt_v2()
+        const encryptData = await worker.encryptAndSign_v2({
+          challengePass: challange,
+          password
+        })
+
+        response = await request(baseUrl)
+          .post('/payments/p2p/confirm')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid
+          })
+
+        await worker.setSessionValue(
+          'payerContractId',
+          response.body.payerContractId
+        )
+        await worker.setSessionValue('operation', response.body.operation)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
     })
   })
 })

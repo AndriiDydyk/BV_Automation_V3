@@ -3,6 +3,7 @@
 const jsonfile = require('jsonfile')
 const forge = require('node-forge')
 const Redis = require('ioredis')
+const opn = require('opn')
 
 class Worker {
   async readJsonFile (filePath) {
@@ -182,6 +183,14 @@ class Worker {
 
   async waitForTime (milliseconds) {
     return new Promise((resolve) => setTimeout(resolve, milliseconds))
+  }
+
+  async openInBrowser (url) {
+    if (url !== '') {
+      opn(url)
+    } else {
+      console.error('Вказана URL-адреса недійсна')
+    }
   }
 }
 
