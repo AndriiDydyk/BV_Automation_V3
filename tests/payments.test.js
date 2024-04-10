@@ -29,6 +29,10 @@ describe('Поповнення мобільного', function () {
     recipient = data.recipientMobileMulti
   })
 
+  this.beforeEach(async () => {
+    await worker.waitForTime(1000)
+  })
+
   describe('GET /mobilemulti/markup', function () {
     let response
 
@@ -136,13 +140,36 @@ describe('Поповнення мобільного', function () {
     it('should return 200 OK status code', function () {
       expect(response.statusCode).to.equal(200)
     })
+
+    it('should be ability save as template', function () {
+      expect(response.body.canBeSavedAsTemplate).to.be.true
+    })
+
+    it('should have correct payerContractId', function () {
+      expect(response.body.payerContractId).to.equal(payerCard.contractId)
+    })
+
+    it(`should have property 'operation'`, function () {
+      expect(response.body).to.has.property('operation')
+    })
+
+    it('operation should have correct title', function () {
+        expect(response.body.operation.title).to.equal('Поповнення мобільного')
+    })
+
+    it('operation should have correct subtitle', function () {
+        expect(response.body.operation.subtitle).to.equal(`Мобільний зв'язок`)
+    })
+
+    it(`operation should have status 'processing'`, function () {
+        expect(response.body.operation.status).to.equal(`processing`)
+    })
   })
 
   describe('POST saveAsTemplate', function () {
     let response
 
     before(async () => {
-      const sessionGuid = await worker.getSessionValue('sessionGuid')
       const serviceName = 'MobileMulti'
 
       const challange = await worker.decrypt_v2()
