@@ -30,6 +30,12 @@ class Worker {
     await this.setSessionValue('clientPrivateKey', keys.clientPrivateKey)
   }
 
+  async loadData () {
+    const data = await this.readJsonFile('./storage/data.json')
+
+    return data
+  }
+
   async setSessionValue (key, value) {
     const redis = new Redis()
     try {

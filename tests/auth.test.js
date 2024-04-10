@@ -8,17 +8,22 @@ const ajv = new Ajv()
 const worker = new Worker()
 
 const baseUrl = 'https://bv.api.vostok.bank'
-const phoneNumber = '380660007201'
-const otp = '111111'
-const password = 'Qwerty12345'
+let phoneNumber
+let password
 
 describe('Авторизація', function () {
+  let otp
   let clientPublicKey
   let device
 
   before(async () => {
     await worker.loadKeys()
     await worker.loadDevices()
+
+    const data = await worker.loadData()
+    phoneNumber = data.phoneNumber
+    otp = data.otp
+    password = data.password
 
     clientPublicKey = await worker.getSessionValue('clientPublicKey')
     device = await worker.getSessionValue('iosReleaseDevice')
@@ -144,14 +149,14 @@ describe('Авторизація', function () {
 
     it('should return 200 OK status code', function () {
       if (!response) {
-        this.skip() // Пропустити виконання тесту
+        this.skip()
       }
       expect(response.statusCode).to.equal(200)
     })
 
     it('should contain valid JSON schema', function () {
       if (!response) {
-        this.skip() // Пропустити виконання тесту
+        this.skip() 
       }
       const schema = {
         type: 'object',
@@ -383,17 +388,19 @@ describe('Дашборд', function () {
 })
 
 describe('Переказ з картки на картку', function () {
-  const payerCardName = 'Додаткова UAH'
-  const recipientCardNumber = '5168130721482042'
-
   let token
   let payerCard
+  let payerCardName
+  let recipientCardNumber
   let amount
 
   before(async function () {
     const cardAccounts = await worker.getSessionValue('cardAccounts')
+    const data = await worker.loadData()
 
     token = await worker.getSessionValue('token')
+    payerCardName = data.payerCardName
+    recipientCardNumber = data.bvRecipientCardNumber
     payerCard = await worker.findCardByName(cardAccounts, payerCardName)
     amount = await worker.randomAmount()
   })
