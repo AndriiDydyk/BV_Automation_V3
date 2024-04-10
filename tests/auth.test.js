@@ -7,11 +7,11 @@ const { expect } = require('chai')
 const ajv = new Ajv()
 const worker = new Worker()
 
-const baseUrl = 'https://bv.api.vostok.bank'
+const baseUrl = 'https://bv.test.api.vostok.bank'
 let phoneNumber
 let password
 
-describe('Авторизація', function () {
+describe.only('Авторизація', function () {
   let otp
   let clientPublicKey
   let device
@@ -26,7 +26,7 @@ describe('Авторизація', function () {
     password = data.password
 
     clientPublicKey = await worker.getSessionValue('clientPublicKey')
-    device = await worker.getSessionValue('iosReleaseDevice')
+    device = await worker.getSessionValue('iosDebugDevice')
   })
 
   describe('POST /start', function () {
@@ -241,7 +241,7 @@ describe('Авторизація', function () {
   })
 })
 
-describe('Дашборд', function () {
+describe.only('Дашборд', function () {
   let token
 
   before(async () => {
