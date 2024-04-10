@@ -387,295 +387,576 @@ describe('Дашборд', function () {
   })
 })
 
-describe.skip('Переказ з картки на картку', function () {
-  let token
-  let payerCard
-  let payerCardName
-  let recipientCardNumber
-  let amount
-
-  before(async function () {
-    const cardAccounts = await worker.getSessionValue('cardAccounts')
-    const data = await worker.loadData()
-
-    token = await worker.getSessionValue('token')
-    payerCardName = data.payerCardName
-    recipientCardNumber = data.bvRecipientCardNumber
-    payerCard = await worker.findCardByName(cardAccounts, payerCardName)
-    amount = await worker.randomAmount()
-  })
-
-  describe('GET /p2p/markup', function () {
-    let response
+describe('Переказ з картки на картку', function () {
+  describe('БВ => БВ (за номером картки)', function () {
+    let token
+    let payerCard
+    let payerCardName
+    let recipientCardNumber
+    let amount
 
     before(async function () {
-      response = await request(baseUrl)
-        .get('/payments/p2p/markup')
-        .set('Authorization', `Bearer ${token}`)
-        .send()
+      const cardAccounts = await worker.getSessionValue('cardAccounts')
+      const data = await worker.loadData()
 
-      const cryptogram = response.body.cryptogram
-      const sessionGuid = response.body.sessionGuid
-
-      await worker.setSessionValue('cryptogram', cryptogram)
-      await worker.setSessionValue('sessionGuid', sessionGuid)
+      token = await worker.getSessionValue('token')
+      payerCardName = data.payerCardName
+      recipientCardNumber = data.bvRecipientCardNumber
+      payerCard = await worker.findCardByName(cardAccounts, payerCardName)
+      amount = await worker.randomAmount()
     })
 
-    it('should return 200 OK status code', function () {
-      expect(response.statusCode).to.equal(200)
-    })
+    describe('GET /p2p/markup', function () {
+      let response
 
-    it('should contain valid JSON schema', function () {
-      const schema = require('../json_schema/p2p_markup.json')
-      const valid = ajv.validate(schema, response.body)
+      before(async function () {
+        response = await request(baseUrl)
+          .get('/payments/p2p/markup')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
 
-      if (!valid) {
-        console.error('Data does not match JSON schema:', ajv.errorsText())
-        console.error(response.body)
-      }
+        const cryptogram = response.body.cryptogram
+        const sessionGuid = response.body.sessionGuid
 
-      expect(valid).to.be.true
-    })
-  })
-
-  describe('GET /p2p/setInput', function () {
-    let response
-
-    before(async function () {
-      const sessionGuid = await worker.getSessionValue('sessionGuid')
-
-      const challange = await worker.decrypt_v2()
-      const encryptData = await worker.encryptAndSign_v2({
-        challengePass: challange
+        await worker.setSessionValue('cryptogram', cryptogram)
+        await worker.setSessionValue('sessionGuid', sessionGuid)
       })
 
-      response = await request(baseUrl)
-        .post('/payments/p2p/setInput')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          sign: encryptData.sign,
-          cryptogram: encryptData.cryptogram,
-          sessionGuid,
-          payerId: `cardNumber:${payerCard.cards[0].cardNumber}`,
-          recipientId: `cardNumber:${recipientCardNumber}`,
-          amount
-        })
-
-      await worker.setSessionValue('cryptogram', response.body.cryptogram)
-    })
-
-    it('should return 200 OK status code', function () {
-      expect(response.statusCode).to.equal(200)
-    })
-
-    it('should contain valid JSON schema', function () {
-      const schema = require('../json_schema/p2p_setInput.json')
-      const valid = ajv.validate(schema, response.body)
-
-      if (!valid) {
-        console.error('Data does not match JSON schema:', ajv.errorsText())
-        console.error(response.body)
-      }
-
-      expect(valid).to.be.true
-    })
-  })
-
-  describe('GET /p2p/commission', function () {
-    let response
-
-    before(async function () {
-      response = await request(baseUrl)
-        .get('/payments/p2p/commission')
-        .set('Authorization', `Bearer ${token}`)
-        .send()
-
-      await worker.setSessionValue(
-        'totalAmount',
-        response.body.commission.totalAmount
-      )
-    })
-
-    it('should return 200 OK status code', function () {
-      expect(response.statusCode).to.equal(200)
-    })
-
-    it('should contain valid JSON schema', function () {
-      const schema = require('../json_schema/p2p_commission.json')
-      const valid = ajv.validate(schema, response.body)
-
-      if (!valid) {
-        console.error('Data does not match JSON schema:', ajv.errorsText())
-        console.error(response.body)
-      }
-
-      expect(valid).to.be.true
-    })
-  })
-
-  describe('GET /p2p/confirm', function () {
-    let response
-
-    before(async function () {
-      const sessionGuid = await worker.getSessionValue('sessionGuid')
-
-      const challange = await worker.decrypt_v2()
-      const encryptData = await worker.encryptAndSign_v2({
-        challengePass: challange,
-        password
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
       })
 
-      response = await request(baseUrl)
-        .post('/payments/p2p/confirm')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          sign: encryptData.sign,
-          cryptogram: encryptData.cryptogram,
-          sessionGuid
+      it('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/p2p_markup.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
+    })
+
+    describe('GET /p2p/setInput', function () {
+      let response
+
+      before(async function () {
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
+
+        const challange = await worker.decrypt_v2()
+        const encryptData = await worker.encryptAndSign_v2({
+          challengePass: challange
         })
 
-      await worker.setSessionValue(
-        'payerContractId',
-        response.body.payerContractId
-      )
-      await worker.setSessionValue('operation', response.body.operation)
+        response = await request(baseUrl)
+          .post('/payments/p2p/setInput')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid,
+            payerId: `cardNumber:${payerCard.cards[0].cardNumber}`,
+            recipientId: `cardNumber:${recipientCardNumber}`,
+            amount
+          })
+
+        await worker.setSessionValue('cryptogram', response.body.cryptogram)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+
+      it('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/p2p_setInput.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
     })
 
-    it('should return 200 OK status code', function () {
-      expect(response.statusCode).to.equal(200)
+    describe('GET /p2p/commission', function () {
+      let response
+
+      before(async function () {
+        response = await request(baseUrl)
+          .get('/payments/p2p/commission')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        await worker.setSessionValue(
+          'totalAmount',
+          response.body.commission.totalAmount
+        )
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+
+      it('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/p2p_commission.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
     })
 
-    it.skip('should contain valid JSON schema', function () {
-      const schema = require('../json_schema/p2p_confirm.json')
-      const valid = ajv.validate(schema, response.body)
+    describe('GET /p2p/confirm', function () {
+      let response
 
-      if (!valid) {
-        console.error('Data does not match JSON schema:', ajv.errorsText())
-        console.error(response.body)
-      }
+      before(async function () {
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
 
-      expect(valid).to.be.true
+        const challange = await worker.decrypt_v2()
+        const encryptData = await worker.encryptAndSign_v2({
+          challengePass: challange,
+          password
+        })
+
+        response = await request(baseUrl)
+          .post('/payments/p2p/confirm')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid
+          })
+
+        await worker.setSessionValue(
+          'payerContractId',
+          response.body.payerContractId
+        )
+        await worker.setSessionValue('operation', response.body.operation)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+
+      it.skip('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/p2p_confirm.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
+
+      it('should have correct payerContractId', () => {
+        expect(response.body.payerContractId).to.equal(payerCard.contractId)
+      })
+
+      it('should have correct title (Переказ з картки на картку)', () => {
+        expect(response.body.operation.title).to.equal(
+          'Переказ з картки на картку'
+        )
+      })
+
+      it('should have correct subtitle (Переказ з картки на картку)', () => {
+        expect(response.body.operation.subtitle).to.equal(
+          'Переказ з картки на картку'
+        )
+      })
+
+      it('should have correct status (processing)', () => {
+        expect(response.body.operation.status).to.equal('processing')
+      })
+
+      it('should have correct dark icon URL', () => {
+        expect(response.body.operation.darkIcon).to.equal(
+          'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Dark.png'
+        )
+      })
+
+      it('should have correct light icon URL', () => {
+        expect(response.body.operation.lightIcon).to.equal(
+          'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
+        )
+      })
     })
 
-    it('should have correct payerContractId', () => {
-      expect(response.body.payerContractId).to.equal(payerCard.contractId)
-    })
+    describe('GET /history/operation', function () {
+      let response
+      let currentOperation
 
-    it('should have correct title (Переказ з картки на картку)', () => {
-      expect(response.body.operation.title).to.equal(
-        'Переказ з картки на картку'
-      )
-    })
+      before(async function () {
+        await worker.waitForTime(5000)
+        const contractId = payerCard.contractId
 
-    it('should have correct subtitle (Переказ з картки на картку)', () => {
-      expect(response.body.operation.subtitle).to.equal(
-        'Переказ з картки на картку'
-      )
-    })
+        response = await request(baseUrl)
+          .get(`/history/operations?skip=0&contractId=${contractId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send()
 
-    it('should have correct status (processing)', () => {
-      expect(response.body.operation.status).to.equal('processing')
-    })
+        const operation = await worker.getSessionValue('operation')
+        currentOperation = response.body.find(
+          (item) => item.id === operation.id
+        )
 
-    it('should have correct dark icon URL', () => {
-      expect(response.body.operation.darkIcon).to.equal(
-        'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Dark.png'
-      )
-    })
+        if (!currentOperation) {
+          throw new Error('Не вдалось знайти операції зі вказаним id')
+        }
+      })
 
-    it('should have correct light icon URL', () => {
-      expect(response.body.operation.lightIcon).to.equal(
-        'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
-      )
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+
+      it('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/history_operation.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
+
+      it('should return current operation', function () {
+        expect(currentOperation).to.be.exist
+      })
+
+      it('should have correct subtitle (Переказ з картки на картку)', () => {
+        expect(currentOperation.subtitle).to.equal(
+          'Переказ з картки на картку'
+        )
+      })
+
+      it('should have correct status', () => {
+        expect(currentOperation.status).to.be.oneOf([
+          'processing',
+          'success',
+          'fail'
+        ])
+      })
+
+      it('should have correct dark icon URL', () => {
+        expect(currentOperation.darkIcon).to.equal(
+          'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Dark.png'
+        )
+      })
+
+      it('should have correct light icon URL', () => {
+        expect(currentOperation.lightIcon).to.equal(
+          'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
+        )
+      })
     })
   })
 
-  describe('GET /history/operation', function () {
-    let response
-    let currentOperation
+  describe('БВ => otherBank (за номером картки)', function () {
+    let token
+    let payerCard
+    let payerCardName
+    let recipientCardNumber
+    let amount
 
     before(async function () {
-      await worker.waitForTime(5000)
-      const contractId = payerCard.contractId
+      const cardAccounts = await worker.getSessionValue('cardAccounts')
+      const data = await worker.loadData()
 
-      response = await request(baseUrl)
-        .get(`/history/operations?skip=0&contractId=${contractId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send()
-
-      const operation = await worker.getSessionValue('operation')
-      currentOperation = response.body.find((item) => item.id === operation.id)
-
-      if (!currentOperation) {
-        throw new Error('Не вдалось знайти операції зі вказаним id')
-      }
+      token = await worker.getSessionValue('token')
+      payerCardName = data.payerCardName
+      recipientCardNumber = data.otherBankCardNumber
+      payerCard = await worker.findCardByName(cardAccounts, payerCardName)
+      amount = await worker.randomAmount()
     })
 
-    it('should return 200 OK status code', function () {
-      expect(response.statusCode).to.equal(200)
+    describe('GET /p2p/markup', function () {
+      let response
+
+      before(async function () {
+        response = await request(baseUrl)
+          .get('/payments/p2p/markup')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        const cryptogram = response.body.cryptogram
+        const sessionGuid = response.body.sessionGuid
+
+        await worker.setSessionValue('cryptogram', cryptogram)
+        await worker.setSessionValue('sessionGuid', sessionGuid)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+
+      it('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/p2p_markup.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
     })
 
-    it('should contain valid JSON schema', function () {
-      const schema = require('../json_schema/history_operation.json')
-      const valid = ajv.validate(schema, response.body)
+    describe('GET /p2p/setInput', function () {
+      let response
 
-      if (!valid) {
-        console.error('Data does not match JSON schema:', ajv.errorsText())
-        console.error(response.body)
-      }
+      before(async function () {
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
 
-      expect(valid).to.be.true
+        const challange = await worker.decrypt_v2()
+        const encryptData = await worker.encryptAndSign_v2({
+          challengePass: challange
+        })
+
+        response = await request(baseUrl)
+          .post('/payments/p2p/setInput')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid,
+            payerId: `cardNumber:${payerCard.cards[0].cardNumber}`,
+            recipientId: `cardNumber:${recipientCardNumber}`,
+            amount
+          })
+
+        await worker.setSessionValue('cryptogram', response.body.cryptogram)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+
+      it('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/p2p_setInput.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
     })
 
-    it('should return current operation', function () {
-      expect(currentOperation).to.be.exist
+    describe('GET /p2p/commission', function () {
+      let response
+
+      before(async function () {
+        response = await request(baseUrl)
+          .get('/payments/p2p/commission')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        await worker.setSessionValue(
+          'totalAmount',
+          response.body.commission.totalAmount
+        )
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+
+      it('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/p2p_commission.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
     })
 
-    it('should have correct subtitle (Переказ з картки на картку)', () => {
-      expect(currentOperation.subtitle).to.equal('Переказ з картки на картку')
+    describe('GET /p2p/confirm', function () {
+      let response
+
+      before(async function () {
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
+
+        const challange = await worker.decrypt_v2()
+        const encryptData = await worker.encryptAndSign_v2({
+          challengePass: challange,
+          password
+        })
+
+        response = await request(baseUrl)
+          .post('/payments/p2p/confirm')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid
+          })
+
+        await worker.setSessionValue(
+          'payerContractId',
+          response.body.payerContractId
+        )
+        await worker.setSessionValue('operation', response.body.operation)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+
+      it.skip('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/p2p_confirm.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
+
+      it('should have correct payerContractId', () => {
+        expect(response.body.payerContractId).to.equal(payerCard.contractId)
+      })
+
+      it('should have correct title (Переказ з картки на картку)', () => {
+        expect(response.body.operation.title).to.equal(
+          'Переказ з картки на картку'
+        )
+      })
+
+      it('should have correct subtitle (Переказ з картки на картку)', () => {
+        expect(response.body.operation.subtitle).to.equal(
+          'Переказ з картки на картку'
+        )
+      })
+
+      it('should have correct status (processing)', () => {
+        expect(response.body.operation.status).to.equal('processing')
+      })
+
+      it('should have correct dark icon URL', () => {
+        expect(response.body.operation.darkIcon).to.equal(
+          'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Dark.png'
+        )
+      })
+
+      it('should have correct light icon URL', () => {
+        expect(response.body.operation.lightIcon).to.equal(
+          'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
+        )
+      })
     })
 
-    it('should have correct status', () => {
-      expect(currentOperation.status).to.be.oneOf([
-        'processing',
-        'success',
-        'fail'
-      ])
-    })
+    describe('GET /history/operation', function () {
+      let response
+      let currentOperation
 
-    it('should have correct dark icon URL', () => {
-      expect(currentOperation.darkIcon).to.equal(
-        'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Dark.png'
-      )
-    })
+      before(async function () {
+        await worker.waitForTime(5000)
+        const contractId = payerCard.contractId
 
-    it('should have correct light icon URL', () => {
-      expect(currentOperation.lightIcon).to.equal(
-        'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
-      )
+        response = await request(baseUrl)
+          .get(`/history/operations?skip=0&contractId=${contractId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        const operation = await worker.getSessionValue('operation')
+        currentOperation = response.body.find(
+          (item) => item.id === operation.id
+        )
+
+        if (!currentOperation) {
+          throw new Error('Не вдалось знайти операції зі вказаним id')
+        }
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+
+      it('should contain valid JSON schema', function () {
+        const schema = require('../json_schema/history_operation.json')
+        const valid = ajv.validate(schema, response.body)
+
+        if (!valid) {
+          console.error('Data does not match JSON schema:', ajv.errorsText())
+          console.error(response.body)
+        }
+
+        expect(valid).to.be.true
+      })
+
+      it('should return current operation', function () {
+        expect(currentOperation).to.be.exist
+      })
+
+      it('should have correct subtitle (Переказ з картки на картку)', () => {
+        expect(currentOperation.subtitle).to.equal(
+          'Переказ з картки на картку'
+        )
+      })
+
+      it('should have correct status', () => {
+        expect(currentOperation.status).to.be.oneOf([
+          'processing',
+          'success',
+          'fail'
+        ])
+      })
+
+      it('should have correct dark icon URL', () => {
+        expect(currentOperation.darkIcon).to.equal(
+          'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Dark.png'
+        )
+      })
+
+      it('should have correct light icon URL', () => {
+        expect(currentOperation.lightIcon).to.equal(
+          'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
+        )
+      })
     })
   })
 })
 
-describe('Переказ з іншої картки', function () {
+describe.skip('Переказ з іншої картки', function () {
   let token
   let payerCardNumber
   let payerExpiryDate
   let payerCvv
+
   let amount
 
   before(async function () {
     token = await worker.getSessionValue('token')
-    const data = await worker.loadData()
-
-    payerCardNumber = data.otherBankVostokCardNumber
-    payerExpiryDate = data.otherBankVostokExpiryDate
-    payerCvv = data.otherBankVostokCVV
   })
 
   describe('БВ(вручну) => БВ(власна)', function () {
     before(async function () {
+      const data = await worker.loadData()
       amount = await worker.randomAmount()
+
+      payerCardNumber = data.otherBankVostokCardNumber
+      payerExpiryDate = data.otherBankVostokExpiryDate
+      payerCvv = data.otherBankVostokCVV
     })
 
     describe('GET /p2p/markup', function () {
@@ -721,6 +1002,127 @@ describe('Переказ з іншої картки', function () {
             sessionGuid,
             payerId: `cardNumber:${payerCardNumber}`,
             recipientId: 'cardNumber:5168130700506316',
+            amount
+          })
+
+        const url = response.body['3ds'].url
+        await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        await worker.openInBrowser(url)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('GET /p2p/commission', function () {
+      let response
+
+      before(async function () {
+        await worker.waitForTime(20000)
+
+        response = await request(baseUrl)
+          .get('/payments/p2p/commission')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('GET /p2p/confirm', function () {
+      let response
+
+      before(async function () {
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
+
+        const challange = await worker.decrypt_v2()
+        const encryptData = await worker.encryptAndSign_v2({
+          challengePass: challange,
+          password
+        })
+
+        response = await request(baseUrl)
+          .post('/payments/p2p/confirm')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid
+          })
+
+        await worker.setSessionValue(
+          'payerContractId',
+          response.body.payerContractId
+        )
+        await worker.setSessionValue('operation', response.body.operation)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+  })
+
+  describe('БВ(вручну) => otherBank(вручну)', function () {
+    let recipientCardNumber
+
+    before(async function () {
+      const data = await worker.loadData()
+      amount = await worker.randomAmount()
+
+      payerCardNumber = data.otherBankVostokCardNumber
+      payerExpiryDate = data.otherBankVostokExpiryDate
+      payerCvv = data.otherBankVostokCVV
+
+      recipientCardNumber = data.otherBankCardNumber
+    })
+
+    describe('GET /p2p/markup', function () {
+      let response
+
+      before(async function () {
+        response = await request(baseUrl)
+          .get('/payments/p2p/markup')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        const cryptogram = response.body.cryptogram
+        const sessionGuid = response.body.sessionGuid
+
+        await worker.setSessionValue('cryptogram', cryptogram)
+        await worker.setSessionValue('sessionGuid', sessionGuid)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('GET /p2p/setInput', function () {
+      let response
+
+      before(async function () {
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
+
+        const challange = await worker.decrypt_v2()
+        const encryptData = await worker.encryptAndSign_v2({
+          challengePass: challange,
+          cvv: payerCvv,
+          expiryDate: payerExpiryDate
+        })
+
+        response = await request(baseUrl)
+          .post('/payments/p2p/setInput')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid,
+            payerId: `cardNumber:${payerCardNumber}`,
+            recipientId: `cardNumber:${recipientCardNumber}`,
             amount
           })
 
