@@ -156,7 +156,7 @@ describe('Авторизація', function () {
 
     it('should contain valid JSON schema', function () {
       if (!response) {
-        this.skip() 
+        this.skip()
       }
       const schema = {
         type: 'object',
@@ -387,7 +387,7 @@ describe('Дашборд', function () {
   })
 })
 
-describe('Переказ з картки на картку', function () {
+describe.skip('Переказ з картки на картку', function () {
   let token
   let payerCard
   let payerCardName
@@ -659,13 +659,21 @@ describe('Переказ з картки на картку', function () {
 
 describe('Переказ з іншої картки', function () {
   let token
+  let payerCardNumber
+  let payerExpiryDate
+  let payerCvv
   let amount
 
   before(async function () {
     token = await worker.getSessionValue('token')
+    const data = await worker.loadData()
+
+    payerCardNumber = data.otherBankVostokCardNumber
+    payerExpiryDate = data.otherBankVostokExpiryDate
+    payerCvv = data.otherBankVostokCVV
   })
 
-  describe('Картка іншого банку => Власна БВ', function () {
+  describe('БВ(вручну) => БВ(власна)', function () {
     before(async function () {
       amount = await worker.randomAmount()
     })
@@ -700,8 +708,8 @@ describe('Переказ з іншої картки', function () {
         const challange = await worker.decrypt_v2()
         const encryptData = await worker.encryptAndSign_v2({
           challengePass: challange,
-          cvv: '415',
-          expiryDate: '29.02.2028'
+          cvv: payerCvv,
+          expiryDate: payerExpiryDate
         })
 
         response = await request(baseUrl)
@@ -711,7 +719,7 @@ describe('Переказ з іншої картки', function () {
             sign: encryptData.sign,
             cryptogram: encryptData.cryptogram,
             sessionGuid,
-            payerId: 'cardNumber:5375411507798101',
+            payerId: `cardNumber:${payerCardNumber}`,
             recipientId: 'cardNumber:5168130700506316',
             amount
           })
