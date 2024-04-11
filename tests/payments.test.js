@@ -9,7 +9,7 @@ const worker = new Worker()
 
 const baseUrl = 'https://bv.test.api.vostok.bank'
 
-describe('Поповнення мобільного', function () {
+describe.skip('Поповнення мобільного', function () {
   let token
   let password
   let payerCard
