@@ -574,3 +574,149 @@ describe.skip('Переказ з іншої картки', function () {
     })
   })
 })
+
+describe.skip('Дашборд', function () {
+  let token
+
+  before(async () => {
+    token = await worker.getSessionValue('token')
+  })
+
+  describe('GET /cards', function () {
+    let response
+
+    before(async () => {
+      response = await request(host)
+        .get('/cards/v3?forceCacheReload=true')
+        .set('Authorization', `Bearer ${token}`)
+        .send()
+
+      const cardAccounts = response.body
+      await worker.setSessionValue('cardAccounts', cardAccounts)
+    })
+
+    it('should return 200 OK status code', function () {
+      expect(response.statusCode).to.equal(200)
+    })
+
+    it('should contain valid JSON schema', function () {
+      const schema = require('../json_schema/cards.json')
+      const valid = ajv.validate(schema, response.body)
+
+      if (!valid) {
+        console.error('Data does not match JSON schema:', ajv.errorsText())
+        console.error(response.body)
+      }
+
+      expect(valid).to.be.true
+    })
+  })
+
+  describe('GET /notifications', function () {
+    let response
+
+    before(async () => {
+      response = await request(host)
+        .get('/notifications/v2?skip=0')
+        .set('Authorization', `Bearer ${token}`)
+        .send()
+    })
+
+    it('should return 200 OK status code', function () {
+      expect(response.statusCode).to.equal(200)
+    })
+
+    it('should contain valid JSON schema', function () {
+      const schema = require('../json_schema/notifications.json')
+      const valid = ajv.validate(schema, response.body)
+
+      if (!valid) {
+        console.error('Data does not match JSON schema:', ajv.errorsText())
+        console.error(response.body)
+      }
+
+      expect(valid).to.be.true
+    })
+  })
+
+  describe('GET /history/propositions', function () {
+    let response
+
+    before(async () => {
+      response = await request(host)
+        .get('/history/propositions')
+        .set('Authorization', `Bearer ${token}`)
+        .send()
+    })
+
+    it('should return 200 OK status code', function () {
+      expect(response.statusCode).to.equal(200)
+    })
+
+    it('should contain valid JSON schema', function () {
+      const schema = require('../json_schema/history_propositions.json')
+      const valid = ajv.validate(schema, response.body)
+
+      if (!valid) {
+        console.error('Data does not match JSON schema:', ajv.errorsText())
+        console.error(response.body)
+      }
+
+      expect(valid).to.be.true
+    })
+  })
+
+  describe('GET /profile/user/statuses', function () {
+    let response
+
+    before(async () => {
+      response = await request(host)
+        .get('/profile/user/statuses')
+        .set('Authorization', `Bearer ${token}`)
+        .send()
+    })
+
+    it('should return 200 OK status code', function () {
+      expect(response.statusCode).to.equal(200)
+    })
+
+    it('should contain valid JSON schema', function () {
+      const schema = require('../json_schema/user_statuses.json')
+      const valid = ajv.validate(schema, response.body)
+
+      if (!valid) {
+        console.error('Data does not match JSON schema:', ajv.errorsText())
+        console.error(response.body)
+      }
+
+      expect(valid).to.be.true
+    })
+  })
+
+  describe('GET /marketplaceRate/checkStatus', function () {
+    let response
+
+    before(async () => {
+      response = await request(host)
+        .get('/marketplaceRate/checkStatus')
+        .set('Authorization', `Bearer ${token}`)
+        .send()
+    })
+
+    it('should return 200 OK status code', function () {
+      expect(response.statusCode).to.equal(200)
+    })
+
+    it('should contain valid JSON schema', function () {
+      const schema = require('../json_schema/marketplace_rate.json')
+      const valid = ajv.validate(schema, response.body)
+
+      if (!valid) {
+        console.error('Data does not match JSON schema:', ajv.errorsText())
+        console.error(response.body)
+      }
+
+      expect(valid).to.be.true
+    })
+  })
+})
