@@ -389,7 +389,7 @@ describe('', function(){
   })
 
   after(async () => {
-    await worker.openInBrowser('/Volumes/SSD/Projects/BV_Automation_V3/mochawesome-report/mochawesome.html')
+    await worker.openInBrowser('/BV_Automation_V3/mochawesome-report/mochawesome.html')
   })
 })
 
