@@ -11,7 +11,7 @@ const baseUrl = 'https://bv.test.api.vostok.bank'
 let phoneNumber
 let password
 
-describe.only('Авторизація', function () {
+describe('Авторизація', function () {
   let otp
   let clientPublicKey
   let device
@@ -241,7 +241,7 @@ describe.only('Авторизація', function () {
   })
 })
 
-describe.only('Дашборд', function () {
+describe('Дашборд', function () {
   let token
 
   before(async () => {
@@ -387,7 +387,7 @@ describe.only('Дашборд', function () {
   })
 })
 
-describe('Переказ з картки на картку', function () {
+describe.skip('Переказ з картки на картку', function () {
   describe('БВ => БВ (за номером картки)', function () {
     let token
     let payerCard

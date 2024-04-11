@@ -141,28 +141,40 @@ describe('Поповнення мобільного', function () {
       expect(response.statusCode).to.equal(200)
     })
 
-    it('should be ability save as template', function () {
-      expect(response.body.canBeSavedAsTemplate).to.be.true
+    it('should be able to save as template', function () {
+      expect(response.body.canBeSavedAsTemplate).to.equal(true);
     })
 
     it('should have correct payerContractId', function () {
       expect(response.body.payerContractId).to.equal(payerCard.contractId)
     })
 
-    it(`should have property 'operation'`, function () {
+    it("should have property 'operation'", function () {
       expect(response.body).to.has.property('operation')
     })
 
     it('operation should have correct title', function () {
-        expect(response.body.operation.title).to.equal('Поповнення мобільного')
+      expect(response.body.operation.title).to.equal('Поповнення мобільного')
     })
 
     it('operation should have correct subtitle', function () {
-        expect(response.body.operation.subtitle).to.equal(`Мобільний зв'язок`)
+      expect(response.body.operation.subtitle).to.equal("Мобільний зв'язок")
     })
 
-    it(`operation should have status 'processing'`, function () {
-        expect(response.body.operation.status).to.equal(`processing`)
+    it("operation should have status 'processing'", function () {
+      expect(response.body.operation.status).to.equal('processing')
+    })
+
+    it('operation should have correct darkIcon', function () {
+      expect(response.body.operation.darkIcon).to.equal(
+        'https://content.vostok.bank/vostokApp/payment-history/categories/logos/mobile-Dark.png'
+      )
+    })
+
+    it('operation should have correct lightIcon', function () {
+      expect(response.body.operation.lightIcon).to.equal(
+        'https://content.vostok.bank/vostokApp/payment-history/categories/logos/mobile-Light.png'
+      )
     })
   })
 
@@ -170,19 +182,17 @@ describe('Поповнення мобільного', function () {
     let response
 
     before(async () => {
-      const serviceName = 'MobileMulti'
-
       const challange = await worker.decrypt_v2()
       const encryptData = await worker.encryptAndSign_v2({
         challengePass: challange
       })
       response = await request(baseUrl)
-        .post(`/payments/service/${serviceName}/saveAsTemplate`)
+        .post(`/payments/service/MobileMulti/saveAsTemplate`)
         .set('Authorization', `Bearer ${token}`)
         .send({
           cryptogram: encryptData.cryptogram,
           sign: encryptData.sign,
-          name: 'Поповнення мобільного'
+          name: `Vodafone, ${recipient}`
         })
 
       const cryptogram = response.body.cryptogram
