@@ -7,7 +7,7 @@ const { expect } = require('chai')
 const ajv = new Ajv()
 const worker = new Worker()
 
-const baseUrl = 'https://bv.test.api.vostok.bank'
+const baseUrl = 'https://bv.api.vostok.bank'
 let phoneNumber
 let password
 
@@ -26,7 +26,7 @@ describe('Авторизація', function () {
     password = data.password
 
     clientPublicKey = await worker.getSessionValue('clientPublicKey')
-    device = await worker.getSessionValue('iosDebugDevice')
+    device = await worker.getSessionValue('iosReleaseDevice')
   })
 
   describe('POST /start', function () {
