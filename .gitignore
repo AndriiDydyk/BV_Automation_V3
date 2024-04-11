@@ -2,3 +2,4 @@ node_modules/
 mochawesome-report/
 storage/data.json
 storage/devices.json
+storage/config.json
