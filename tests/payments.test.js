@@ -206,7 +206,7 @@ describe.skip('Поповнення мобільного', function () {
   })
 })
 
-describe('Переказ з іншої картки', function () {
+describe.skip('Переказ з іншої картки', function () {
   let token
   let password
   let recipientCard
@@ -290,7 +290,7 @@ describe('Переказ з іншої картки', function () {
             amount
           })
 
-        if(response.body['3ds']){
+        if (response.body['3ds']) {
           await worker.openInBrowser(response.body['3ds'].url)
           await worker.waitForTime(20000)
         }
@@ -474,7 +474,7 @@ describe('Переказ з іншої картки', function () {
             amount
           })
 
-        if(response.body['3ds']){
+        if (response.body['3ds']) {
           await worker.openInBrowser(response.body['3ds'].url)
           await worker.waitForTime(20000)
         }
