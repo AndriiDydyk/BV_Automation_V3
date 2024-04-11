@@ -7,7 +7,7 @@ const { expect } = require('chai')
 const ajv = new Ajv()
 const worker = new Worker()
 
-const baseUrl = 'https://bv.api.vostok.bank'
+const baseUrl = 'https://bv.test.api.vostok.bank'
 
 describe.skip('Поповнення мобільного', function () {
   let token
