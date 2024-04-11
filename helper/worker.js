@@ -36,6 +36,12 @@ class Worker {
     return data
   }
 
+  async loadEnvironments () {
+    const data = await this.readJsonFile('./storage/config.json')
+
+    return data
+  }
+
   async setSessionValue (key, value) {
     const redis = new Redis()
     try {
@@ -45,6 +51,23 @@ class Worker {
         `Помилка при записі значення для ключа ${key} в Redis:`,
         error
       )
+    } finally {
+      redis.quit()
+    }
+  }
+
+  async setMultipleSessionValues (data) {
+    const redis = new Redis()
+    try {
+      const multi = redis.multi()
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          multi.set(key, JSON.stringify(data[key]))
+        }
+      }
+      await multi.exec()
+    } catch (error) {
+      console.error('Помилка при записі значень у Redis:', error)
     } finally {
       redis.quit()
     }

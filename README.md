@@ -1,4 +1,5 @@
 # npm install
-# brew install redis
-# redis-server
 
+# brew install redis
+
+# redis-server
