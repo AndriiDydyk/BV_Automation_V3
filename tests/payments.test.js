@@ -290,6 +290,10 @@ describe('Переказ з іншої картки', function () {
             amount
           })
 
+        if(response.body['3ds']){
+          await worker.openInBrowser(response.body['3ds'].url)
+          await worker.waitForTime(20000)
+        }
         await worker.setSessionValue('cryptogram', response.body.cryptogram)
       })
 
@@ -469,6 +473,11 @@ describe('Переказ з іншої картки', function () {
             recipientId: `cardNumber:${recipientCard.cards[0].cardNumber}`,
             amount
           })
+
+        if(response.body['3ds']){
+          await worker.openInBrowser(response.body['3ds'].url)
+          await worker.waitForTime(20000)
+        }
 
         await worker.setSessionValue('cryptogram', response.body.cryptogram)
       })
