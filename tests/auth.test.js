@@ -182,6 +182,7 @@ describe('', function () {
     let password
     let recipientCard
     let recipientCardName
+    let recipientCardNumber
     let amount
   
     before(async () => {
@@ -195,6 +196,7 @@ describe('', function () {
         cardAccounts,
         recipientCardName
       )
+      recipientCardNumber = recipientCard.cards[0].cardNumber
     })
   
     describe('БВР(вручну) => Власна БВ', function () {
@@ -529,6 +531,132 @@ describe('', function () {
           expect(response.body.operation.lightIcon).to.equal(
             'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
           )
+        })
+      })
+    })
+
+    describe('БВ (вручну) => Власна БВ', function() {
+      let payerCardNumber
+      let payerCardExpiryDate
+      let payerCardCvv
+
+      before(async () =>  {
+        const data = await worker.loadData()
+        payerCardNumber = data.otherBankVostokCardNumber
+        payerCardExpiryDate = data.otherBankVostokExpiryDate
+        payerCardCvv = data.otherBankVostokCVV
+        amount = await worker.randomAmount()
+      })
+
+      describe('GET /p2p/markup', function () {
+        let response
+  
+        before(async () => {
+          response = await request(host)
+            .get('/payments/p2p/markup')
+            .set('Authorization', `Bearer ${token}`)
+            .send()
+
+          await worker.setMultipleSessionValues({
+            cryptogram: response.body.cryptogram,
+            sessionGuid: response.body.sessionGuid
+          })
+        })
+  
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+      })
+
+      describe('POST /p2p/setInput', function () {
+        let response
+  
+        before(async function () {
+          const sessionGuid = await worker.getSessionValue('sessionGuid')
+  
+          const encryptData = await cryptoManager.encryptAndSign({
+            cvv: payerCardCvv,
+            expiryDate: payerCardExpiryDate
+          })
+  
+          response = await request(host)
+            .post('/payments/p2p/setInput')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+              sign: encryptData.sign,
+              cryptogram: encryptData.cryptogram,
+              sessionGuid,
+              payerId: `cardNumber:${payerCardNumber}`,
+              recipientId: `cardNumber:${recipientCardNumber}`,
+              amount
+            })
+  
+          if (response.body['3ds']) {
+            await worker.openInBrowser(response.body['3ds'].url, 'safari')
+            await worker.waitForTime(20000)
+          }
+          await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        })
+  
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+      })
+   
+      describe('GET /p2p/commission', function () {
+        let response
+  
+        before(async () => {
+          response = await request(host)
+            .get('/payments/p2p/commission')
+            .set('Authorization', `Bearer ${token}`)
+            .send()
+        })
+  
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+      })
+
+      describe('POST /p2p/confirm', function () {
+        let response
+  
+        before(async function () {
+          const sessionGuid = await worker.getSessionValue('sessionGuid')
+  
+          const encryptData = await cryptoManager.encryptAndSign({
+            password
+          })
+  
+          response = await request(host)
+            .post('/payments/p2p/confirm')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+              sign: encryptData.sign,
+              cryptogram: encryptData.cryptogram,
+              sessionGuid
+            })
+  
+          await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        })
+  
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+  
+        it('should be ability to save card as template', function () {
+          expect(response.body.hasCardToSave).to.equal(true)
+          expect(response.body).to.has.property('cardToSave')
+        })
+  
+        it('should have correct recipientContractId', function () {
+          expect(response.body.recipientContractId).to.equal(
+            recipientCard.contractId
+          )
+        })
+  
+        it("should have property 'operation'", function () {
+          expect(response.body).to.has.property('operation')
         })
       })
     })

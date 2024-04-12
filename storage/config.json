@@ -31,24 +31,24 @@
     "otp": "111111",
     "password": "Qwerty12345",
     "device": {
-      "product": "iPhone 11",
-      "deviceId": "7438DE44-33D4-42D4-A463-7E48A36A19BD",
-      "installId": "E02591D2-2ABD-4D60-99F6-D16DD9FF51A0",
       "isBiometryAvailable": true,
-      "isPushNotificationsOn": true,
-      "isAndroid": false,
+      "product": "iPhone 11",
+      "pushNotificationId": "fIpx0MkkrEzbh-33pErE8E:APA91bEEAn5L0RC2Kpp9rr_i2TjW_ggTsd25br2t-ERTyX9CR8ZJIQYA281dbadhzMWjVbKgFx9vyXvpJvSbAvIm-f29-bnxuyVsv5TREAejKPJp90zeQq6Ei05FTr-nIZScWeWMWdbh",
       "isSystemModified": false,
-      "appVersion": "2.17.1",
-      "pushNotificationId": "ehmJ87qnKEe4j4IWiABjzI:APA91bEF2D6_KRPMT9kqnwoBUTFVvWfajKH4R0SzPW9jtjhkjNxyysoN35IJ1aaQZcdqKnvCyz-5T7mzP7DaLDji2DIMYWPjnE52nHHyoumsRuj7mUvOhv9uxu21fdo0YokeUlDPGKNz",
-      "isDebug": false,
-      "manufacturer": "Apple",
-      "osVersion": "17.4",
-      "brand": "Apple",
+      "isPushNotificationsOn": true,
+      "appBuildNumber": "225",
       "deviceName": "iPhone 11, 17.4",
-      "appBuildNumber": "223",
-      "model": "iPhone 11",
+      "installId": "C1830A2D-E22F-4D6B-B4FC-E2C7C1250B88",
+      "isAndroid": false,
+      "brand": "Apple",
+      "isNFCAvailable": true,
+      "isDebug": false,
       "isScreenBlockOn": true,
-      "isNFCAvailable": true
+      "manufacturer": "Apple",
+      "model": "iPhone 11",
+      "osVersion": "17.4",
+      "deviceId": "7438DE44-33D4-42D4-A463-7E48A36A19BD",
+      "appVersion": "2.17.2"
     }
   }
 }

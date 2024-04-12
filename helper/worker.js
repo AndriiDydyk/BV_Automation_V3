@@ -1,5 +1,6 @@
 /* eslint-disable require-jsdoc */
 
+const { exec } = require('child_process');
 const jsonfile = require('jsonfile')
 const forge = require('node-forge')
 const Redis = require('ioredis')
@@ -214,11 +215,20 @@ class Worker {
     return new Promise((resolve) => setTimeout(resolve, milliseconds))
   }
 
-  async openInBrowser (url) {
+  async openInBrowser(url, browserName) {
     if (url !== '') {
-      opn(url)
+      exec(`osascript -e 'tell application "${browserName}" to open location "${url}"'`, (err, stdout, stderr) => {
+        if (err) {
+          console.error(`Сталася помилка при відкриванні в ${browserName}:`, err);
+          return;
+        }
+        console.log(`Веб-сторінка успішно відкрита в ${browserName}`);
+        
+        // Додатковий код для фокусу на вікні браузера
+        exec(`osascript -e 'tell application "${browserName}" to activate'`);
+      });
     } else {
-      console.error('Вказана URL-адреса недійсна')
+      console.error('Вказана URL-адреса недійсна');
     }
   }
 }
