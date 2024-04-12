@@ -19,11 +19,11 @@ describe('', function () {
   before(async () => {
     const env = await worker.loadEnvironments()
 
-    host = env.prod.host
-    phoneNumber = env.prod.phoneNumber
-    otp = env.prod.otp
-    password = env.prod.password
-    device = env.prod.device
+    host = env.test.host
+    phoneNumber = env.test.phoneNumber
+    otp = env.test.otp
+    password = env.test.password
+    device = env.test.device
   })
 
   describe('Авторизація', function () {
