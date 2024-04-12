@@ -195,7 +195,6 @@ describe('', function () {
         cardAccounts,
         recipientCardName
       )
-      amount = await worker.randomAmount()
     })
   
     describe('БВР(вручну) => Власна БВ', function () {
@@ -210,6 +209,7 @@ describe('', function () {
         payerCardNumber = data.ownBVRCardNumber
         payerCardExpiryDate = data.ownBVRExpiryDate
         payerCardCvv = data.ownBVRCvv
+        amount = await worker.randomAmount()
       })
   
       describe('GET /p2p/markup', function () {
@@ -364,6 +364,7 @@ describe('', function () {
   
         payerTemplateName = data.ownBVRTemplateName
         payerCardCvv = data.ownBVRCvv
+        amount = await worker.randomAmount()
       })
   
       describe('GET /p2p/markup', function () {
