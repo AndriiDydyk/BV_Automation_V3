@@ -5,7 +5,6 @@ const CryptoManager = require('../helper/cryptoManager')
 const Ajv = require('ajv')
 const { expect } = require('chai')
 
-const ajv = new Ajv()
 const worker = new Worker()
 const cryptoManager = new CryptoManager()
 
@@ -17,13 +16,14 @@ describe('', function () {
   let password
 
   before(async () => {
-    const env = await worker.loadEnvironments()
+    const config = await worker.loadEnvironments()
+    const env = config.test
 
-    host = env.test.host
-    phoneNumber = env.test.phoneNumber
-    otp = env.test.otp
-    password = env.test.password
-    device = env.test.device
+    host = env.host
+    phoneNumber = env.phoneNumber
+    otp = env.otp
+    password = env.password
+    device = env.device
   })
 
   describe('Авторизація', function () {
@@ -154,13 +154,39 @@ describe('', function () {
     })
   })
 
+  describe('Дашборд', function () {
+    let token
+    let response
+    before(async () => {
+      token = await worker.getSessionValue('token')
+    })
+
+    describe('GET /cards', function () {
+      before(async function () {
+        response = await request(host)
+          .get('/cards/v3?forceCacheReload=true')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        if (!response || response.statusCode !== 200) {
+          this.skip()
+        }
+        await worker.setSessionValue('cardAccounts', response?.body)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+  })
+
   describe('Поповнення мобільного', function () {
     let token
     let payerCard
     let payerCardId
     let recipient
     let amount
-  
+
     before(async () => {
       token = await worker.getSessionValue('token')
       const cardAccounts = await worker.getSessionValue('cardAccounts')
@@ -172,37 +198,33 @@ describe('', function () {
       amount = await worker.randomAmount()
       recipient = data.recipientMobileMulti
     })
-  
-    this.beforeEach(async () => {
-      await worker.waitForTime(1000)
-    })
-  
+
     describe('GET /mobilemulti/markup', function () {
       let response
-  
+
       before(async () => {
         response = await request(host)
           .get('/payments/service/mobilemulti/markup')
           .set('Authorization', `Bearer ${token}`)
           .send()
-        
+
         await worker.setMultipleSessionValues({
           cryptogram: response.body.cryptogram,
           sessionGuid: response.body.sessionGuid
         })
       })
-  
+
       it('should return 200 OK status code', function () {
         expect(response.statusCode).to.equal(200)
       })
     })
-  
+
     describe('POST /mobilemulti/setInput', function () {
       let response
-  
+
       before(async () => {
         const sessionGuid = await worker.getSessionValue('sessionGuid')
-  
+
         const encryptData = await cryptoManager.encryptAndSign({
           controls: [
             {
@@ -228,36 +250,36 @@ describe('', function () {
             sign: encryptData.sign,
             sessionGuid
           })
-    
+
         await worker.setSessionValue('cryptogram', response.body.cryptogram)
       })
-  
+
       it('should return 200 OK status code', function () {
         expect(response.statusCode).to.equal(200)
       })
     })
-  
+
     describe('GET /mobilemulti/commission', function () {
       let response
-  
+
       before(async () => {
         response = await request(host)
           .get('/payments/v2/service/MobileMulti/commission')
           .set('Authorization', `Bearer ${token}`)
           .send()
       })
-  
+
       it('should return 200 OK status code', function () {
         expect(response.statusCode).to.equal(200)
       })
     })
-  
+
     describe('POST /mobilemulti/confirm', function () {
       let response
-  
+
       before(async () => {
         const sessionGuid = await worker.getSessionValue('sessionGuid')
-  
+
         const encryptData = await cryptoManager.encryptAndSign({
           password
         })
@@ -269,54 +291,54 @@ describe('', function () {
             sign: encryptData.sign,
             sessionGuid
           })
-    
+
         await worker.setSessionValue('cryptogram', response.body.cryptogram)
       })
-  
+
       it('should return 200 OK status code', function () {
         expect(response.statusCode).to.equal(200)
       })
-  
+
       it('should be able to save as template', function () {
         expect(response.body.canBeSavedAsTemplate).to.equal(true)
       })
-  
+
       it('should have correct payerContractId', function () {
         expect(response.body.payerContractId).to.equal(payerCard.contractId)
       })
-  
+
       it("should have property 'operation'", function () {
         expect(response.body).to.has.property('operation')
       })
-  
+
       it('operation should have correct title', function () {
         expect(response.body.operation.title).to.equal('Поповнення мобільного')
       })
-  
+
       it('operation should have correct subtitle', function () {
         expect(response.body.operation.subtitle).to.equal("Мобільний зв'язок")
       })
-  
+
       it("operation should have status 'processing'", function () {
         expect(response.body.operation.status).to.equal('processing')
       })
-  
+
       it('operation should have correct darkIcon', function () {
         expect(response.body.operation.darkIcon).to.equal(
           'https://content.vostok.bank/vostokApp/payment-history/categories/logos/mobile-Dark.png'
         )
       })
-  
+
       it('operation should have correct lightIcon', function () {
         expect(response.body.operation.lightIcon).to.equal(
           'https://content.vostok.bank/vostokApp/payment-history/categories/logos/mobile-Light.png'
         )
       })
     })
-  
+
     describe('POST saveAsTemplate', function () {
       let response
-  
+
       before(async () => {
         const challange = await worker.decrypt_v2()
         const encryptData = await worker.encryptAndSign_v2({
@@ -330,10 +352,10 @@ describe('', function () {
             sign: encryptData.sign,
             name: `Vodafone, ${recipient}`
           })
-    
+
         await worker.setSessionValue('cryptogram', response.body.cryptogram)
       })
-  
+
       it('should return 200 OK status code', function () {
         expect(response.statusCode).to.equal(200)
       })

@@ -1,13 +1,8 @@
 const forge = require('node-forge')
-const Redis = require('ioredis')
 
 const Worker = require('./worker')
 
 class CryptoManager extends Worker {
-  constructor () {
-    super()
-  }
-
   async decrypt () {
     const cryptogram = await this.getSessionValue('cryptogram')
     const privateKey = await this.getSessionValue('clientPrivateKey')
