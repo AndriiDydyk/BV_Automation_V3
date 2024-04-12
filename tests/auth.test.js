@@ -1,11 +1,13 @@
 const request = require('supertest')
 const { before } = require('mocha')
 const Worker = require('../helper/worker')
+const CryptoManager = require('../helper/cryptoManager')
 const Ajv = require('ajv')
 const { expect } = require('chai')
 
 const ajv = new Ajv()
 const worker = new Worker()
+const cryptoManager = new CryptoManager()
 
 describe('', function () {
   let host
@@ -63,10 +65,7 @@ describe('', function () {
       before(async () => {
         const token = await worker.getSessionValue('token')
 
-        const challange = await worker.decrypt_v2()
-        const encryptData = await worker.encryptAndSign_v2({
-          challengePass: challange
-        })
+        const encryptData = await cryptoManager.encryptAndSign({})
 
         response = await request(host)
           .post('/auth/v4/nextstep')
@@ -99,12 +98,7 @@ describe('', function () {
         }
 
         const token = await worker.getSessionValue('token')
-
-        const challange = await worker.decrypt_v2()
-        const encryptData = await worker.encryptAndSign_v2({
-          challengePass: challange,
-          otp
-        })
+        const encryptData = await cryptoManager.encryptAndSign({otp})
 
         response = await request(host)
           .post('/auth/v4/otp/confirm')
@@ -138,12 +132,7 @@ describe('', function () {
         }
 
         const token = await worker.getSessionValue('token')
-
-        const challange = await worker.decrypt_v2()
-        const encryptData = await worker.encryptAndSign_v2({
-          challengePass: challange,
-          password
-        })
+        const encryptData = await cryptoManager.encryptAndSign({password})
 
         response = await request(host)
           .post('/auth/v3/enterpassword')
