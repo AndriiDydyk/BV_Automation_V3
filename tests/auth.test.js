@@ -19,11 +19,11 @@ describe('', function () {
   before(async () => {
     const env = await worker.loadEnvironments()
 
-    host = env.test.host
-    phoneNumber = env.test.phoneNumber
-    otp = env.test.otp
-    password = env.test.password
-    device = env.test.device
+    host = env.prod.host
+    phoneNumber = env.prod.phoneNumber
+    otp = env.prod.otp
+    password = env.prod.password
+    device = env.prod.device
   })
 
   describe('Авторизація', function () {
@@ -98,7 +98,7 @@ describe('', function () {
         }
 
         const token = await worker.getSessionValue('token')
-        const encryptData = await cryptoManager.encryptAndSign({otp})
+        const encryptData = await cryptoManager.encryptAndSign({ otp })
 
         response = await request(host)
           .post('/auth/v4/otp/confirm')
@@ -132,7 +132,7 @@ describe('', function () {
         }
 
         const token = await worker.getSessionValue('token')
-        const encryptData = await cryptoManager.encryptAndSign({password})
+        const encryptData = await cryptoManager.encryptAndSign({ password })
 
         response = await request(host)
           .post('/auth/v3/enterpassword')

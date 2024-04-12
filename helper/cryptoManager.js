@@ -21,7 +21,7 @@ class CryptoManager extends Worker {
   async encryptAndSign (dataToEncrypt) {
     const challange = await this.decrypt()
     dataToEncrypt.challengePass = challange
-    
+
     const serverPublicKey = await this.getSessionValue('serverPublicKey')
     const clientPrivateKey = await this.getSessionValue('clientPrivateKey')
 
