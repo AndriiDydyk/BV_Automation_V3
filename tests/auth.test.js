@@ -153,4 +153,27 @@ describe('', function () {
       })
     })
   })
+
+  describe('Дашборд', function () {
+    let token
+    let response
+    before(async () => {
+      token = await worker.getSessionValue('token')
+    })
+
+    describe('GET /cards', function () {
+      before(async () => {
+        response = await request(host)
+          .get('/cards/v3?forceCacheReload=true')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+        
+        await worker.setSessionValue('cardAccounts', response.body)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+  })
 })
