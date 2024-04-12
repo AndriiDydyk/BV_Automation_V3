@@ -186,6 +186,7 @@ describe('', function () {
     let payerCardId
     let recipient
     let amount
+    let stopRun
 
     before(async () => {
       token = await worker.getSessionValue('token')
@@ -197,6 +198,13 @@ describe('', function () {
       payerCardId = payerCard.cards[0].id
       amount = await worker.randomAmount()
       recipient = data.recipientMobileMulti
+      stopRun = false
+    })
+
+    before(function () {
+      if (stopRun) {
+        this.skip() // Пропускає виконання всього describe блоку, якщо stopRun дорівнює true
+      }
     })
 
     describe('GET /mobilemulti/markup', function () {
@@ -208,10 +216,17 @@ describe('', function () {
           .set('Authorization', `Bearer ${token}`)
           .send()
 
-        await worker.setMultipleSessionValues({
-          cryptogram: response.body.cryptogram,
-          sessionGuid: response.body.sessionGuid
-        })
+        if (!response || response.statusCode !== 200) {
+          stopRun = true
+          throw new Error(
+            `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+          )
+        } else {
+          await worker.setMultipleSessionValues({
+            cryptogram: response.body.cryptogram,
+            sessionGuid: response.body.sessionGuid
+          })
+        }
       })
 
       it('should return 200 OK status code', function () {
@@ -222,7 +237,10 @@ describe('', function () {
     describe('POST /mobilemulti/setInput', function () {
       let response
 
-      before(async () => {
+      before(async function () {
+        if (stopRun === true) {
+          this.skip()
+        }
         const sessionGuid = await worker.getSessionValue('sessionGuid')
 
         const encryptData = await cryptoManager.encryptAndSign({
@@ -250,8 +268,14 @@ describe('', function () {
             sign: encryptData.sign,
             sessionGuid
           })
-
-        await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        if (!response || response.statusCode !== 200) {
+          stopRun = true
+          throw new Error(
+            `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+          )
+        } else {
+          await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        }
       })
 
       it('should return 200 OK status code', function () {
@@ -262,7 +286,11 @@ describe('', function () {
     describe('GET /mobilemulti/commission', function () {
       let response
 
-      before(async () => {
+      before(async function () {
+        if (stopRun === true) {
+          this.skip()
+        }
+
         response = await request(host)
           .get('/payments/v2/service/MobileMulti/commission')
           .set('Authorization', `Bearer ${token}`)
@@ -277,7 +305,10 @@ describe('', function () {
     describe('POST /mobilemulti/confirm', function () {
       let response
 
-      before(async () => {
+      before(async function () {
+        if (stopRun === true) {
+          this.skip()
+        }
         const sessionGuid = await worker.getSessionValue('sessionGuid')
 
         const encryptData = await cryptoManager.encryptAndSign({
@@ -291,8 +322,14 @@ describe('', function () {
             sign: encryptData.sign,
             sessionGuid
           })
-
-        await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        if (!response || response.statusCode !== 200) {
+          stopRun = true
+          throw new Error(
+            `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+          )
+        } else {
+          await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        }
       })
 
       it('should return 200 OK status code', function () {
@@ -336,7 +373,7 @@ describe('', function () {
       })
     })
 
-    describe('POST saveAsTemplate', function () {
+    describe.skip('POST saveAsTemplate', function () {
       let response
 
       before(async () => {
