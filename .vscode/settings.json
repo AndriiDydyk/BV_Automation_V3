@@ -1,0 +1,6 @@
+{
+  "liveServer.settings.useLocalIp": false,
+  "liveServer.settings.proxy": {
+    "enable": true
+  }
+}

@@ -1,8 +1,9 @@
+// eslint-disable-next-line no-unused-expressionsсду
 const request = require('supertest')
 const { before } = require('mocha')
 const Worker = require('../helper/worker')
 const CryptoManager = require('../helper/cryptoManager')
-const Ajv = require('ajv')
+// const Ajv = require('ajv')
 const { expect } = require('chai')
 
 const worker = new Worker()
@@ -203,7 +204,7 @@ describe('', function () {
 
     before(function () {
       if (stopRun) {
-        this.skip() 
+        this.skip()
       }
     })
 
@@ -391,6 +392,197 @@ describe('', function () {
           })
 
         await worker.setSessionValue('cryptogram', response.body.cryptogram)
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+  })
+
+  describe('Переказ з картки на картку', function () {
+    let stopRun
+    let token
+    let payerCard
+    let recipient
+    let amount
+
+    before(async () => {
+      token = await worker.getSessionValue('token')
+
+      const cardAccounts = await worker.getSessionValue('cardAccounts')
+      const data = await worker.loadData()
+      const payerCardName = data.payerCardName
+
+      payerCard = await worker.findCardByName(cardAccounts, payerCardName)
+      recipient = '5168130700722715'
+      amount = await worker.randomAmount()
+      stopRun = false
+    })
+
+    before(function () {
+      if (stopRun) {
+        this.skip
+      }
+    })
+
+    describe('GET /p2p/markup', function () {
+      let response
+
+      before(async () => {
+        response = await request(host)
+          .get('/payments/p2p/markup')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        if (!response || response.statusCode !== 200) {
+          stopRun = true
+          throw new Error(
+            `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+          )
+        } else {
+          await worker.setMultipleSessionValues({
+            cryptogram: response.body.cryptogram,
+            sessionGuid: response.body.sessionGuid
+          })
+        }
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('POST /p2p/setInput', function () {
+      let response
+
+      before(async () => {
+        if (stopRun === true) {
+          this.skip()
+        }
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
+        const encryptData = await cryptoManager.encryptAndSign({})
+        const payerCardNumber = payerCard.cards[0].cardNumber
+
+        response = await request(host)
+          .post('/payments/p2p/setInput')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid,
+            payerId: `cardNumber:${payerCardNumber}`,
+            recipientId: `cardNumber:${recipient}`,
+            amount
+          })
+
+        if (!response || response.statusCode !== 200) {
+          stopRun = true
+          throw new Error(
+            `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+          )
+        } else {
+          await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        }
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('GET /p2p/commission', function () {
+      let response
+
+      before(async () => {
+        if (stopRun === true) {
+          this.skip()
+        }
+
+        response = await request(host)
+          .get('/payments/p2p/commission')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        if (!response || response.statusCode !== 200) {
+          stopRun = true
+          throw new Error(
+            `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+          )
+        }
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('POST /p2p/confirm', function () {
+      let response
+
+      before(async () => {
+        if (stopRun === true) {
+          this.skip()
+        }
+
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
+        const encryptData = await cryptoManager.encryptAndSign({
+          password
+        })
+
+        response = await request(host)
+          .post('/payments/p2p/confirm')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            sessionGuid
+          })
+
+        if (!response || response.statusCode !== 200) {
+          stopRun = true
+          throw new Error(
+            `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+          )
+        } else {
+          await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        }
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('POST /saveCard', function () {
+      let response
+
+      before(async () => {
+        if (stopRun === true) {
+          this.skip()
+        }
+        
+        const encryptData = await cryptoManager.encryptAndSign({
+          password
+        })
+
+        response = await request(host)
+          .post('/payments/savedCards/saveFromLastPayment')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            sign: encryptData.sign,
+            cryptogram: encryptData.cryptogram,
+            cardName: 'Дидик А.В. | Vostok (test)'
+          })
+
+        if (!response || response.statusCode !== 200) {
+          stopRun = true
+          throw new Error(
+            `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+          )
+        } else {
+          await worker.setSessionValue('cryptogram', response.body.cryptogram)
+        }
       })
 
       it('should return 200 OK status code', function () {
