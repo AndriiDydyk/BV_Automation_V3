@@ -203,7 +203,7 @@ describe('', function () {
 
     before(function () {
       if (stopRun) {
-        this.skip() // Пропускає виконання всього describe блоку, якщо stopRun дорівнює true
+        this.skip() 
       }
     })
 
