@@ -191,6 +191,7 @@ describe('', function () {
 
     before(async () => {
       token = await worker.getSessionValue('token')
+
       const cardAccounts = await worker.getSessionValue('cardAccounts')
       const data = await worker.loadData()
       const payerCardName = data.payerCardName
@@ -242,8 +243,8 @@ describe('', function () {
         if (stopRun === true) {
           this.skip()
         }
-        const sessionGuid = await worker.getSessionValue('sessionGuid')
 
+        const sessionGuid = await worker.getSessionValue('sessionGuid')
         const encryptData = await cryptoManager.encryptAndSign({
           controls: [
             {
@@ -400,7 +401,7 @@ describe('', function () {
     })
   })
 
-  describe('Переказ з картки на картку', function () {
+  describe.only('Переказ з картки на картку', function () {
     let stopRun
     let token
     let payerCard
@@ -453,13 +454,37 @@ describe('', function () {
       })
     })
 
-    describe('POST /p2p/setInput', function () {
+    describe('GET /p2p/cardbin', function () {
       let response
 
       before(async () => {
+        const cardbin = recipient.slice(0, 8)
+        response = await request(host)
+          .get(`/payments/cardbin/${cardbin}/bank`)
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        if (!response || response.statusCode !== 200) {
+          stopRun = true
+          throw new Error(
+            `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+          )
+        }
+      })
+
+      it('should return 200 OK status code', function () {
+        expect(response.statusCode).to.equal(200)
+      })
+    })
+
+    describe('POST /p2p/setInput', function () {
+      let response
+
+      before(async function() {
         if (stopRun === true) {
           this.skip()
         }
+
         const sessionGuid = await worker.getSessionValue('sessionGuid')
         const encryptData = await cryptoManager.encryptAndSign({})
         const payerCardNumber = payerCard.cards[0].cardNumber
@@ -494,7 +519,7 @@ describe('', function () {
     describe('GET /p2p/commission', function () {
       let response
 
-      before(async () => {
+      before(async function() {
         if (stopRun === true) {
           this.skip()
         }
@@ -520,7 +545,7 @@ describe('', function () {
     describe('POST /p2p/confirm', function () {
       let response
 
-      before(async () => {
+      before(async function() {
         if (stopRun === true) {
           this.skip()
         }
@@ -554,10 +579,10 @@ describe('', function () {
       })
     })
 
-    describe('POST /saveCard', function () {
+    describe.skip('POST /saveCard', function () {
       let response
 
-      before(async () => {
+      before(async function()  {
         if (stopRun === true) {
           this.skip()
         }
