@@ -520,7 +520,341 @@ describe('', function () {
           expect(response.statusCode).to.equal(200)
         })
 
-        it('should update balances included lost operation', function () {
+        it('should update balances after transaction', function () {
+          const balances = response.body.agreementsBalances
+          const recipientBalanceAtEnd = balances.find(
+            (item) => item.contractId === recipientCard.contractId
+          )
+          // const operationAmount = Number(amount) * 100
+
+          expect(recipientBalanceAtEnd.balance.totalAmount).to.equal(
+            recipientBalanceAtStart.balance.totalAmount + totalAmount
+          )
+        })
+      })
+    })
+
+    describe('otherBank (шаблон) => Власна БВ', function () {
+      let templateName
+      let payerCardCvv
+
+      before(async function () {
+        if (stopRun) {
+          this.skip
+        }
+
+        const data = await worker.loadData()
+        templateName = data.monoBankTemplateName
+        payerCardCvv = data.monoBankCvv
+        amount = await worker.randomAmount()
+
+        const balancesAtStart = await request(host)
+          .get('/cards/v3/balances')
+          .set('Authorization', `Bearer ${token}`)
+          .send()
+
+        if (!balancesAtStart || balancesAtStart.statusCode !== 200) {
+          throw new Error('Не вдалось отримати баланси')
+        } else {
+          await worker.setSessionValue('balancesAtStart', balancesAtStart.body)
+        }
+      })
+
+      describe('GET /p2p/markup', function () {
+        let response
+
+        before(async () => {
+          response = await request(host)
+            .get('/payments/p2p/markup')
+            .set('Authorization', `Bearer ${token}`)
+            .send()
+
+          if (!response || response.statusCode !== 200) {
+            stopRun = true
+            throw new Error(
+              `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+            )
+          } else {
+            await worker.setMultipleSessionValues({
+              cryptogram: response.body.cryptogram,
+              sessionGuid: response.body.sessionGuid
+            })
+          }
+        })
+
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+      })
+
+      describe('GET /savedcards', function () {
+        let response
+
+        before(async function () {
+          if (stopRun === true) {
+            this.skip()
+          }
+
+          response = await request(host)
+            .get('/payments/savedcards')
+            .set('Authorization', `Bearer ${token}`)
+            .send()
+
+          if (!response || response.statusCode !== 200) {
+            stopRun = true
+            throw new Error(
+              `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+            )
+          } else {
+            await worker.setSessionValue(
+              'transferFrom',
+              response.body.transferFrom
+            )
+          }
+        })
+
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+      })
+
+      describe('POST /p2p/setInput', function () {
+        let response
+
+        before(async function () {
+          if (stopRun === true) {
+            this.skip()
+          }
+
+          const sessionGuid = await worker.getSessionValue('sessionGuid')
+          const transferFrom = await worker.getSessionValue('transferFrom')
+          const payerTemplate = transferFrom.find(
+            (item) => item.name === templateName
+          )
+          const payerGuid = payerTemplate.guid
+          const encryptData = await cryptoManager.encryptAndSign({
+            cvv: payerCardCvv
+          })
+
+          response = await request(host)
+            .post('/payments/p2p/setInput')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+              sign: encryptData.sign,
+              cryptogram: encryptData.cryptogram,
+              sessionGuid,
+              payerId: `cardGuid:${payerGuid}`,
+              recipientId: `cardNumber:${recipientCardNumber}`,
+              amount
+            })
+
+          if (!response || response.statusCode !== 200) {
+            stopRun = true
+            throw new Error(
+              `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+            )
+          } else {
+            if (response.body['3ds']) {
+              await worker.openInBrowser(response.body['3ds'].url, 'safari')
+              await worker.waitForTime(30000)
+            }
+            await worker.setSessionValue(
+              'cryptogram',
+              response.body.cryptogram
+            )
+          }
+        })
+
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+      })
+
+      describe('GET /p2p/commission', function () {
+        let response
+
+        before(async function () {
+          if (stopRun === true) {
+            this.skip()
+          }
+
+          response = await request(host)
+            .get('/payments/p2p/commission')
+            .set('Authorization', `Bearer ${token}`)
+            .send()
+
+          if (!response || response.statusCode !== 200) {
+            stopRun = true
+            throw new Error(
+              `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+            )
+          } else {
+            await worker.setSessionValue(
+              'commission',
+              response.body.commission
+            )
+            totalAmount = response.body.commission.totalAmount
+          }
+        })
+
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+      })
+
+      describe('POST /p2p/confirm', function () {
+        let response
+
+        before(async function () {
+          if (stopRun === true) {
+            this.skip()
+          }
+
+          const sessionGuid = await worker.getSessionValue('sessionGuid')
+          const encryptData = await cryptoManager.encryptAndSign({
+            password
+          })
+
+          response = await request(host)
+            .post('/payments/p2p/confirm')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+              sign: encryptData.sign,
+              cryptogram: encryptData.cryptogram,
+              sessionGuid
+            })
+
+          if (!response || response.statusCode !== 200) {
+            stopRun = true
+            throw new Error(
+              `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+            )
+          } else {
+            await worker.setMultipleSessionValues({
+              cryptogram: response.body.cryptogram,
+              operationId: response.body.operation.id
+            })
+          }
+        })
+
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+
+        it('should not be ability to save card as template', function () {
+          expect(response.body.hasCardToSave).to.equal(false)
+        })
+
+        it('should have correct recipientContractId', function () {
+          expect(response.body.recipientContractId).to.equal(
+            recipientCard.contractId
+          )
+        })
+
+        it("should have property 'operation'", function () {
+          expect(response.body).to.has.property('operation')
+        })
+      })
+
+      describe('GET /history/operations', function () {
+        let response
+        let operationId
+        let currentOperation
+
+        before(async function () {
+          if (stopRun === true) {
+            this.skip()
+          }
+
+          await worker.waitForTime(15000)
+          const contractId = recipientCard.contractId
+          operationId = await worker.getSessionValue('operationId')
+
+          response = await request(host)
+            .get(`/history/operations?skip=0&take=30&contractId=${contractId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send()
+
+          if (!response || response.statusCode !== 200) {
+            stopRun = true
+            throw new Error(
+              `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+            )
+          } else {
+            await worker.setSessionValue('historyOperations', response.body)
+
+            currentOperation = response.body.find(
+              (item) => item.id === operationId
+            )
+
+            if (!currentOperation) {
+              throw new Error(
+                `Не знайдено операцію з вказаним id: ${operationId}`
+              )
+            }
+          }
+        })
+
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+
+        it('should have correct dark icon', function () {
+          expect(currentOperation.darkIcon).to.equal(
+            'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Dark.png'
+          )
+        })
+
+        it('should have correct light icon', function () {
+          expect(currentOperation.lightIcon).to.equal(
+            'https://content.vostok.bank/vostokApp/payment-history/categories/logos/TransferCard-Light.png'
+          )
+        })
+
+        it('should have correct subtitle (Переказ з картки на картку)', function () {
+          expect(currentOperation.subtitle).to.equal(
+            'Переказ з картки на картку'
+          )
+        })
+
+        it('should have correct status (success)', function () {
+          expect(currentOperation.status).to.equal('success')
+        })
+      })
+
+      describe('GET /balances', function () {
+        let response
+        let recipientBalanceAtStart
+
+        before(async function () {
+          if (stopRun === true) {
+            this.skip()
+          }
+
+          const balancesAtStart =
+            await worker.getSessionValue('balancesAtStart')
+          recipientBalanceAtStart = balancesAtStart.agreementsBalances.find(
+            (item) => item.contractId === recipientCard.contractId
+          )
+
+          response = await request(host)
+            .get('/cards/v3/balances')
+            .set('Authorization', `Bearer ${token}`)
+            .send()
+
+          if (!response || response.statusCode !== 200) {
+            stopRun = true
+            throw new Error(
+              `Status code: ${response.statusCode}, ${JSON.stringify(response?.body)}`
+            )
+          }
+        })
+
+        it('should return 200 OK status code', function () {
+          expect(response.statusCode).to.equal(200)
+        })
+
+        it('should update balances after transaction', function () {
           const balances = response.body.agreementsBalances
           const recipientBalanceAtEnd = balances.find(
             (item) => item.contractId === recipientCard.contractId
@@ -871,7 +1205,7 @@ describe('', function () {
         expect(response.statusCode).to.equal(200)
       })
 
-      it('should update balances included lost operation', function () {
+      it('should update balances after transaction', function () {
         const balances = response.body.agreementsBalances
         const payerBalanceAtEnd = balances.find(
           (item) => item.contractId === payerCard.contractId
